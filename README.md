@@ -6,19 +6,28 @@ Settings management for Ruby on Rails 4 applications (ActiveRecord)
 
 Add this line to your application's Gemfile:
 
+```ruby
     gem 'settingson'
+```
 
 And then execute:
 
+```console
     $ bundle
+```
 
 Or install it yourself as:
 
+```console
     $ gem install settingson
+```
 
 ## Usage
 
-TODO: Write usage instructions here
+```console
+rails g settingson MODEL
+```
+Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but could also be `Configuration`. This will create a model (if one does not exist) and configure it with default options. Next, you'll usually run `rake db:migrate` as the generator will have created a migration file (if your ORM supports them).
 
 ## Contributing
 
