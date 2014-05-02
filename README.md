@@ -1,6 +1,6 @@
 # Settingson
 
-TODO: Write a gem description
+Settings management for Ruby on Rails 4 applications (ActiveRecord) 
 
 ## Installation
 

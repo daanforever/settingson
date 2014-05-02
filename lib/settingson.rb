@@ -1,5 +1,7 @@
 require "settingson/version"
 
 module Settingson
-  # Your code goes here...
+  if defined?(Rails)
+    require 'settingson/engine'
+  end
 end
