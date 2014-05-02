@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/settingson.svg)](http://badge.fury.io/rb/settingson)
+
 # Settingson
 
 Settings management for Ruby on Rails 4 applications (ActiveRecord) 
