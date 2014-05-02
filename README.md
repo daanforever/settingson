@@ -29,7 +29,13 @@ Or install it yourself as:
 ```console
 rails g settingson MODEL
 ```
-Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but could also be `Configuration`. This will create a model (if one does not exist) and configure it with default options. Next, you'll usually run `rake db:migrate` as the generator will have created a migration file (if your ORM supports them).
+Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but could also be `Configuration`. This will create a model (if one does not exist) and configure it with default options. 
+
+Next, you'll usually run 
+```console
+rake db:migrate
+``` 
+as the generator will have created a migration file (if your ORM supports them).
 
 ## Contributing
 
