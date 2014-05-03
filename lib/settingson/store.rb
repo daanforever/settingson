@@ -2,6 +2,8 @@ class Settingson::Store
 
   attr_accessor :name, :value
 
+  extend ActiveModel::Naming
+
   def initialize(klass, string, *args)
     @klass  = klass
     @value  = parse(string, args.first)
