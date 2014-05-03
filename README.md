@@ -4,6 +4,32 @@
 
 Settings management for Ruby on Rails 4 applications (ActiveRecord) 
 
+```ruby
+Settings.server.host = '127.0.0.1'
+Settings.server.port = '8888'
+
+Settings.server.host # => '127.0.0.1'
+Settings.server.port # => '8888'
+
+Settings.server.smtp.host = '127.0.0.1'
+Settings.server.smtp.port = 25
+
+Settings.server.smtp.host # => "127.0.0.1"
+Settings.server.smtp.port # => 25
+
+# With hash
+Settings.rules = { '1st RULE' => 'You do not talk about FIGHT CLUB.' }
+Settings.rules['1st RULE'] #  => "You do not talk about FIGHT CLUB."
+
+# With array
+Settings.array = [ 1, 2, 3, 4, 5 ]
+Settings.array # => [1, 2, 3, 4, 5]
+
+# Array of hashes
+Settings.array.of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
+Settings.array.of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
