@@ -44,6 +44,7 @@ as the generator will have created a migration file (if your ORM supports them).
   Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
   Settings Load (0.1ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3.hello2' LIMIT 1
  => #<Settingson::Store:0x000001016aee68 @klass=Settings(id: integer, name: string, value: text, created_at: datetime, updated_at: datetime), @name="hello.hello3.hello2", @value=#<Settingson::Store:0x000001016aee68 ...>>
+ 
 2.1.1 :007 > Settings.hello.hello3.hello2 = 1
   Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
   Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
@@ -52,6 +53,7 @@ as the generator will have created a migration file (if your ORM supports them).
   SQL (5.2ms)  INSERT INTO "settings" ("created_at", "name", "updated_at", "value") VALUES (?, ?, ?, ?)  [["created_at", Sat, 03 May 2014 09:45:25 UTC +00:00], ["name", "hello.hello3.hello2"], ["updated_at", Sat, 03 May 2014 09:45:25 UTC +00:00], ["value", "--- 1\n...\n"]]
    (2.4ms)  commit transaction
  => 1
+ 
 2.1.1 :008 > Settings.hello.hello3.hello2
   Settings Load (0.3ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
   Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
