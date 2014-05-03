@@ -38,6 +38,13 @@ rake db:migrate
 as the generator will have created a migration file (if your ORM supports them).
 
 ## Example
+
+```console
+rails g settingson Settings
+rake db:migrate
+```
+
+In rails console:
 ```ruby
 2.1.1 :006 > Settings.hello.hello3.hello2
   Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
