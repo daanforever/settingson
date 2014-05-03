@@ -28,6 +28,12 @@ Settings.array # => [1, 2, 3, 4, 5]
 # Array of hashes
 Settings.array.of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
 Settings.array.of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
+
+Settings.server[:host, :port, :role] = [ '127.0.0.1', 3000, :web ]
+Settings.server[:host, :port, :role] # => ["127.0.0.1", 3000, :web]
+Settings.server.host # => '127.0.0.1'
+Settings.server.port # => 3000
+Settings.server.role # => :web
 ```
 
 ## Installation
