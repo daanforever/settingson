@@ -29,10 +29,14 @@ class Settingson::Store
     when /(.+)=/
       @name = @name.nil? ? $1 : @name + ".#{$1}"
       if record = @klass.find_by(name: @name)
-        record.update(value: value.to_yaml)
+        if value.nil?
+          record.destroy
+        else
+          record.update(value: value.to_yaml)
+        end
         value
       else
-        @klass.create(name: @name, value: value.to_yaml)
+        @klass.create(name: @name, value: value.to_yaml) unless value.nil?
         value
       end
     else
