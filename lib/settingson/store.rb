@@ -19,6 +19,42 @@ class Settingson::Store
     true
   end
 
+  def [](*args)
+    return nil if args.nil?
+    if args.count == 1
+      result = @klass.find_by(name: "#{@name}.#{args.first}").try(:value)
+      result.nil? ? nil : YAML.load(result)
+    else
+      args.map do |subname|
+        result = @klass.find_by(name: "#{@name}.#{subname}").try(:value)
+        result.nil? ? nil : YAML.load(result)
+      end
+    end
+  end
+
+  def []=(*args)
+    return nil if args.nil?
+    if args.count == 2
+      if record = @klass.find_by(name: "#{@name}.#{args.first}")
+        record.update(value: args.last.to_yaml)
+      else
+        @klass.create(name: "#{@name}.#{args.first}", value: args.last.to_yaml)
+      end
+      args.last
+    elsif args.count > 2
+      values = args.pop
+      args.map do |subname|
+        value = values.shift
+        if record = @klass.find_by(name: "#{@name}.#{subname}")
+          record.update(value: value.to_yaml)
+        else
+          @klass.create(name: "#{@name}.#{subname}", value: value.to_yaml)
+        end
+        value
+      end
+    end
+  end
+
   def method_missing(string, *args)
     @value   = parse(string, args.first)
   end
