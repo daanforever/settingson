@@ -6,6 +6,10 @@ module Settingson::Base
     attr_accessor :settingson
   end
 
+  def to_s
+    self.new_record? ? '' : super
+  end
+
   def method_missing(symbol, *args)
     super
   rescue NoMethodError
