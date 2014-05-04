@@ -30,6 +30,13 @@ Settings.array.of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
 Settings.array.of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
 ```
 
+### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
+```ruby
+= simple_form_for Settings.server do |f|
+  = f.input :host
+  = f.input :port
+```
+
 ## Installation
 
 Add this line to your application's Gemfile:
