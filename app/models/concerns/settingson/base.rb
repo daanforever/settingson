@@ -15,7 +15,9 @@ module Settingson::Base
 
       @settingson = "#{@settingson}.#{$1}"
 
-      if record = self.class.find_by(name: @settingson)
+      if record = self.class.find_by(name: @settingson) and args.first.nil?
+        record.destroy
+      elsif record
         record.update(value: args.first.to_yaml)
       else
         self.class.create(name: @settingson, value: args.first.to_yaml)
