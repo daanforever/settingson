@@ -31,6 +31,7 @@ Settings.array.of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
 ```
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
+in view:
 ```ruby
 = simple_form_for Settings.server do |f|
   = f.input :host
