@@ -19,18 +19,18 @@ module Settingson::Base
 
       @settingson = "#{@settingson}.#{$1}"
 
-      if record = self.class.find_by(name: @settingson) and args.first.nil?
+      if record = self.class.find_by(key: @settingson) and args.first.nil?
         record.destroy
       elsif record
         record.update(value: args.first.to_yaml)
       else
-        self.class.create(name: @settingson, value: args.first.to_yaml)
+        self.class.create(key: @settingson, value: args.first.to_yaml)
       end
 
     else # getter
 
       @settingson += ".#{symbol.to_s}"
-      if record = self.class.find_by(name: @settingson)
+      if record = self.class.find_by(key: @settingson)
         YAML.load(record.value)
       else
         self
@@ -50,15 +50,15 @@ module Settingson::Base
 
         @settingson = $1
 
-        if record = find_by(name: @settingson)
+        if record = find_by(key: @settingson)
           record.update(value: args.first.to_yaml)
         else
-          create(name: @settingson, value: args.first.to_yaml, settingson: @settingson)
+          create(key: @settingson, value: args.first.to_yaml, settingson: @settingson)
         end
 
       else # getter
 
-        if record = find_by(name: symbol.to_s)
+        if record = find_by(key: symbol.to_s)
           YAML.load record.value
         else
           new(settingson: symbol.to_s)
