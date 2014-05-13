@@ -1,3 +1,4 @@
+require 'rails/generators/active_record'
 class SettingsonGenerator < Rails::Generators::NamedBase
   include Rails::Generators::Migration
 
@@ -5,16 +6,18 @@ class SettingsonGenerator < Rails::Generators::NamedBase
 
   desc "This generator creates a model and its migration"
   def settingson_migration
-    if defined?(Settings)
+    klass = name.camelize
+    say "Searching for #{klass.constantize.inspect}"
+    if Object.const_defined?(klass)
 
       settingson_inject_lines(name)
 
-      if Settings.column_names.include?('name')
+      if klass.constantize.column_names.include?('name')
         migration_template 'migrations/rename_name_to_key_on_settings.rb', 'db/migrate/rename_name_to_key_on_settings.rb'
       end
 
     else
-      generate(:model, "#{name.camelize} key:string value:text")
+      generate(:model, "#{klass} key:string value:text")
       settingson_inject_lines(name)
     end
   end
