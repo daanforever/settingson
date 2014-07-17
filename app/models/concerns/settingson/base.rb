@@ -26,6 +26,10 @@ module Settingson::Base
       else
         self.class.create(key: @settingson, value: args.first.to_yaml)
       end
+    when /(.+)\?$/  # 
+
+      @settingson = "#{@settingson}.#{$1}"
+      self.class.find_by(key: @settingson).present?
 
     else # getter
 
@@ -55,6 +59,10 @@ module Settingson::Base
         else
           create(key: @settingson, value: args.first.to_yaml, settingson: @settingson)
         end
+  
+      when /(.+)\?$/  # 
+
+        find_by(key: $1).present?
 
       else # getter
 
