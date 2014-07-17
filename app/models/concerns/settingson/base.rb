@@ -33,16 +33,11 @@ module Settingson::Base
 
     else # getter
 
-      if defined?(@settingson)
-        if @settingson.blank?
-          @settingson += "#{symbol.to_s}"
-        else
-          @settingson += ".#{symbol.to_s}"
-        end
+      if not defined?(@settingson) or @settingson.blank?
+          @settingson = "#{symbol.to_s}"
       else
-        @settingson = '' 
+          @settingson += ".#{symbol.to_s}"
       end
-
       
       if record = self.class.find_by(key: @settingson)
         YAML.load(record.value)
