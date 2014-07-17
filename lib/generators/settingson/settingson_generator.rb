@@ -7,7 +7,7 @@ class SettingsonGenerator < Rails::Generators::NamedBase
   desc "This generator creates a model and its migration"
   def settingson_migration
     klass = name.camelize
-    say "Searching for #{klass.constantize.inspect}"
+    say "Searching for #{klass} class"
     if Object.const_defined?(klass)
 
       settingson_inject_lines(name)
