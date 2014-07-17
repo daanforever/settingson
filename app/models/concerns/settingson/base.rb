@@ -7,7 +7,7 @@ module Settingson::Base
   end
 
   def to_s
-    self.new_record? ? '' : super
+    self.new_record? ? '' : YAML.load(self.value).to_s
   end
 
   def method_missing(symbol, *args)
