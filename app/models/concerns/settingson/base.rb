@@ -4,6 +4,10 @@ module Settingson::Base
 
   included do
     attr_accessor :settingson
+
+    after_find do |setting|
+      setting.value = YAML.load(setting.value)
+    end
   end
 
   def to_s
@@ -40,7 +44,8 @@ module Settingson::Base
       end
       
       if record = self.class.find_by(key: @settingson)
-        YAML.load(record.value)
+        # YAML.load(record.value)
+        record.value
       else
         self
       end
@@ -72,7 +77,8 @@ module Settingson::Base
       else # getter
 
         if record = find_by(key: symbol.to_s)
-          YAML.load record.value
+          # YAML.load record.value
+          record.value
         else
           new(settingson: symbol.to_s)
         end
