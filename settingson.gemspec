@@ -26,5 +26,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "spring-commands-rspec"
   spec.add_development_dependency "database_cleaner"
+  spec.add_development_dependency "faker"
   # spec.add_development_dependency "rake"
 end
