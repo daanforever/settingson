@@ -68,7 +68,9 @@ module Settingson::Base
 
         @settingson = $1
 
-        if record = find_by(key: @settingson)
+        if record = find_by(key: @settingson) and args.first.nil?
+          record.destroy
+        elsif record
           record.update(value: args.first.to_yaml)
         else
           create(key: @settingson, value: args.first.to_yaml, settingson: @settingson)
