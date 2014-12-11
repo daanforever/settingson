@@ -26,8 +26,8 @@ Settings.array = [ 1, 2, 3, 4, 5 ]
 Settings.array # => [1, 2, 3, 4, 5]
 
 # Array of hashes
-Settings.array.of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
-Settings.array.of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
+Settings.array_of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
+Settings.array_of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
 ```
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
