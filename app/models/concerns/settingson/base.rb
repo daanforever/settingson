@@ -14,6 +14,10 @@ module Settingson::Base
     self.new_record? ? '' : YAML.load(self.value).to_s
   end
 
+  def to_i
+    self.new_record? ? 0 : YAML.load(self.value).to_i
+  end
+
   def method_missing(symbol, *args)
     super
   rescue NoMethodError
