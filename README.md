@@ -35,7 +35,7 @@ Settings.item = :hello
 Settings.item # => true
 
 # ActiveRecord
-Settings.item! # 
+Settings.item! #  => <Settings id: 1, key: "item", value: :hello, created_at: "...", updated_at: "...">
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
