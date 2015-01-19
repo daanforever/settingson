@@ -11,11 +11,11 @@ module Settingson::Base
   end
 
   def to_s
-    self.new_record? ? '' : YAML.load(self.value).to_s
+    self.new_record? ? '' : self.value.to_s
   end
 
   def to_i
-    self.new_record? ? 0 : YAML.load(self.value).to_i
+    self.new_record? ? 0 : self.value.to_i
   end
 
   def method_missing(symbol, *args)
