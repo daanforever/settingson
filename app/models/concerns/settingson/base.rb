@@ -77,9 +77,9 @@ module Settingson::Base
         end
   
       when /(.+)\?$/  # 
-
         find_by(key: $1).present?
-
+      when /(.+)\!$/  # returns self or nil
+        find_by(key: $1)
       else # getter
 
         if record = find_by(key: symbol.to_s)
