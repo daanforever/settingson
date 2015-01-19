@@ -34,12 +34,13 @@ module Settingson::Base
       else
         self.class.create(key: @settingson, value: args.first.to_yaml)
       end
-    when /(.+)\?$/  # 
-
+    when /(.+)\?$/  # returns boolean
       @settingson = "#{@settingson}.#{$1}"
       self.class.find_by(key: @settingson).present?
-
-    else # getter
+    when /(.+)\!$/  # returns self or nil
+      @settingson = "#{@settingson}.#{$1}"
+      self.class.find_by(key: @settingson)
+    else # returns values or self
 
       if not defined?(@settingson) or @settingson.blank?
           @settingson = "#{symbol.to_s}"
@@ -48,7 +49,6 @@ module Settingson::Base
       end
       
       if record = self.class.find_by(key: @settingson)
-        # YAML.load(record.value)
         record.value
       else
         self

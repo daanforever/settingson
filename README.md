@@ -29,6 +29,13 @@ Settings.array # => [1, 2, 3, 4, 5]
 Settings.array_of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
 Settings.array_of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
 ```
+# Boolean
+Settings.item # => false
+Settings.item = :hello
+Settings.item # => true
+
+# ActiveRecord
+Settings.item! # 
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
