@@ -41,9 +41,10 @@ Settings.item! #  => <Settings id: 1, key: "item", value: :hello, created_at: ".
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
 ```ruby
-= simple_form_for Settings.server do |f|
-  = f.input :host
-  = f.input :port
+= simple_form_for(Settings, url: settings_path) do |f|
+  = f.error_notification
+  = f.input :'host.port'
+  = f.button :submit
 ```
 
 ## Installation
