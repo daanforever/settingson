@@ -4,10 +4,7 @@ module Settingson::Base
 
   included do
     attr_accessor :settingson
-
-    after_find do |setting|
-      setting.value = YAML.load(setting.value)
-    end
+    serialize     :value
   end
 
   def to_s
@@ -30,9 +27,9 @@ module Settingson::Base
       if record = self.class.find_by(key: @settingson) and args.first.nil?
         record.destroy
       elsif record
-        record.update(value: args.first.to_yaml)
+        record.update(value: args.first)
       else
-        self.class.create(key: @settingson, value: args.first.to_yaml)
+        self.class.create(key: @settingson, value: args.first)
       end
     when /(.+)\?$/  # returns boolean
       @settingson = "#{@settingson}.#{$1}"
@@ -47,7 +44,7 @@ module Settingson::Base
       else
           @settingson += ".#{symbol.to_s}"
       end
-      
+
       if record = self.class.find_by(key: @settingson)
         record.value
       else
@@ -71,19 +68,18 @@ module Settingson::Base
         if record = find_by(key: @settingson) and args.first.nil?
           record.destroy
         elsif record
-          record.update(value: args.first.to_yaml)
+          record.update(value: args.first)
         else
-          create(key: @settingson, value: args.first.to_yaml, settingson: @settingson)
+          create(key: @settingson, value: args.first, settingson: @settingson)
         end
-  
-      when /(.+)\?$/  # 
+
+      when /(.+)\?$/  #
         find_by(key: $1).present?
       when /(.+)\!$/  # returns self or nil
         find_by(key: $1)
       else # getter
 
         if record = find_by(key: symbol.to_s)
-          # YAML.load record.value
           record.value
         else
           new(settingson: symbol.to_s)
