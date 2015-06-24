@@ -17,7 +17,7 @@ class SettingsonGenerator < Rails::Generators::NamedBase
       end
 
     else
-      generate(:model, "#{klass} key:string value:text")
+      generate(:model, "#{klass} key:string:uniq value:text --force-plural")
       settingson_inject_lines(name)
     end
   end
