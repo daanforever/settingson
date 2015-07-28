@@ -8,12 +8,22 @@ module Settingson::Base
   end
 
   def to_s
-    self.new_record? ? '' : self.value.to_s
+    self.new_record? ? '' : super
+  end
+
+  def inspect
+    self.new_record? ? '""' : super
   end
 
   def to_i
-    self.new_record? ? 0 : self.value.to_i
+    self.new_record? ? 0 : super
   end
+
+  def nil?
+    self.new_record? ? true : super
+  end
+
+  alias empty? nil?
 
   def method_missing(symbol, *args)
     super
@@ -22,7 +32,11 @@ module Settingson::Base
     case symbol.to_s
     when /(.+)=/  # setter
 
-      @settingson = "#{@settingson}.#{$1}"
+      if not defined?(@settingson) or @settingson.blank?
+        @settingson = $1
+      else
+        @settingson += ".#{$1}"
+      end
 
       if record = self.class.find_by(key: @settingson) and args.first.nil?
         record.destroy
@@ -31,6 +45,7 @@ module Settingson::Base
       else
         self.class.create(key: @settingson, value: args.first)
       end
+
     when /(.+)\?$/  # returns boolean
       @settingson = "#{@settingson}.#{$1}"
       self.class.find_by(key: @settingson).present?
@@ -56,6 +71,15 @@ module Settingson::Base
 
   module ClassMethods
 
+    def from_hash(attributes)
+      case attributes
+      when Hash
+        attributes.map{|k,v| find_or_create_by(key: k).update!(value: v)}
+      else
+        false
+      end
+    end
+
     def method_missing(symbol, *args)
       super
     rescue NoMethodError
@@ -72,8 +96,7 @@ module Settingson::Base
         else
           create(key: @settingson, value: args.first, settingson: @settingson)
         end
-
-      when /(.+)\?$/  #
+      when /(.+)\?$/  # returns boolean
         find_by(key: $1).present?
       when /(.+)\!$/  # returns self or nil
         find_by(key: $1)

@@ -2,49 +2,78 @@
 
 # Settingson
 
-Settings management for Ruby on Rails 4 applications (ActiveRecord) 
+Simple settings management for applications (Ruby on Rails 4 with ActiveRecord)
 
+## Example
+
+shell commands:
+```console
+rails g settingson Settings
+rake db:migrate
+```
+
+code:
 ```ruby
 Settings.server.host = '127.0.0.1'
 Settings.server.port = '8888'
 
-Settings.server.host # => '127.0.0.1'
-Settings.server.port # => '8888'
+Settings.server.host        # => '127.0.0.1'
+Settings.server.port        # => '8888'
 
 Settings.server.smtp.host = '127.0.0.1'
 Settings.server.smtp.port = 25
 
-Settings.server.smtp.host # => "127.0.0.1"
-Settings.server.smtp.port # => 25
+Settings.server.smtp.host   # => "127.0.0.1"
+Settings.server.smtp.port   # => 25
 
-# With hash
-Settings.rules = { '1st RULE' => 'You do not talk about FIGHT CLUB.' }
-Settings.rules['1st RULE'] #  => "You do not talk about FIGHT CLUB."
+Settings.from_hash({hello: :world})
+Settings.hello              # => :world
 
-# With array
-Settings.array = [ 1, 2, 3, 4, 5 ]
-Settings.array # => [1, 2, 3, 4, 5]
+Settings.not_found          # => ""
+Settings.not_found.nil?     # => true
+Settings.not_found.empty?   # => true
+Settings.not_found.blank?   # => true
+Settings.not_found.present? # => false
 
-# Array of hashes
-Settings.array_of.hashes = [ { hello: :world}, {'glad' => :to}, {see: 'you'} ]
-Settings.array_of.hashes # => [{:hello=>:world}, {"glad"=>:to}, {:see=>"you"}]
-
-# Boolean
-Settings.item # => false
-Settings.item = :hello
-Settings.item # => true
-
-# ActiveRecord
-Settings.item! #  => <Settings id: 1, key: "item", value: :hello, created_at: "...", updated_at: "...">
+# but
+Settings.not_found.class    # => Settings(id: integer, key: string, value: text, created_at: datetime, updated_at: datetime)
 ```
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
 ```ruby
-= simple_form_for(Settings, url: settings_path) do |f|
+= simple_form_for( Settings, url: settings_path, method: :patch ) do |f|
   = f.error_notification
-  = f.input :'host.port'
-  = f.button :submit
+  = f.input :'server.smtp.host', label: 'SMTP Host', as: :string, placeholder: 'mail.google.com'
+  = f.input :'server.smtp.port', label: 'SMTP Port', as: :string, placeholder: '25'
+  = f.button :submit, t('update', default: 'Update settings')
+```
+
+in controller:
+```ruby
+class SettingsController < ApplicationController
+  def update
+    if Settings.from_hash(params[:settings])
+      flash[:notice] = t('settings_updated', default: 'Settings updated successfully')
+    else
+      flash[:alert]  = t('settings_not_updated', default: 'Settings not updated')
+    end
+    render :edit
+  end
+end
+```
+
+## The initial values
+in config/initializers/settingson.rb
+```ruby
+Rails.application.config.after_initialize do
+  begin
+    Settings.server.smtp.host? || Settings.server.smtp.host = 'host'
+    Settings.server.smtp.port? || Settings.server.smtp.port = '25'
+  rescue
+    Rails.logger.warn('Something goes wrong')
+  end
+end
 ```
 
 ## Installation
@@ -72,44 +101,13 @@ Or install it yourself as:
 ```console
 rails g settingson MODEL
 ```
-Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but could also be `Configuration`. This will create a model (if one does not exist) and configure it with default options. 
+Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but it may also be `Configuration` or something else. This will create a model (if one does not exist) and configure it with default options.
 
-Next, you'll usually run 
+Next, you'll usually run
 ```console
-rake db:migrate
-``` 
-as the generator will have created a migration file (if your ORM supports them).
-
-## Example
-
-```console
-rails g settingson Settings
 rake db:migrate
 ```
-
-In rails console:
-```ruby
-2.1.1 :006 > Settings.hello.hello3.hello2
-  Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
-  Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
-  Settings Load (0.1ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3.hello2' LIMIT 1
- => #<Settingson::Store:0x000001016aee68 @klass=Settings(id: integer, name: string, value: text, created_at: datetime, updated_at: datetime), @name="hello.hello3.hello2", @value=#<Settingson::Store:0x000001016aee68 ...>>
- 
-2.1.1 :007 > Settings.hello.hello3.hello2 = 1
-  Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
-  Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
-  Settings Load (0.1ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3.hello2' LIMIT 1
-   (0.1ms)  begin transaction
-  SQL (5.2ms)  INSERT INTO "settings" ("created_at", "name", "updated_at", "value") VALUES (?, ?, ?, ?)  [["created_at", Sat, 03 May 2014 09:45:25 UTC +00:00], ["name", "hello.hello3.hello2"], ["updated_at", Sat, 03 May 2014 09:45:25 UTC +00:00], ["value", "--- 1\n...\n"]]
-   (2.4ms)  commit transaction
- => 1
- 
-2.1.1 :008 > Settings.hello.hello3.hello2
-  Settings Load (0.3ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello' LIMIT 1
-  Settings Load (0.2ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3' LIMIT 1
-  Settings Load (0.1ms)  SELECT "settings".* FROM "settings" WHERE "settings"."name" = 'hello.hello3.hello2' LIMIT 1
- => 1
- ```
+as the generator will have created a migration file (if your ORM supports them).
 
 ## Contributing
 
