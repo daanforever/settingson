@@ -1,4 +1,5 @@
 [![Gem Version](https://badge.fury.io/rb/settingson.svg)](http://badge.fury.io/rb/settingson)
+[![Build Status](https://travis-ci.org/daanforever/settingson.svg?branch=master)](https://travis-ci.org/daanforever/settingson)
 
 # Settingson
 
