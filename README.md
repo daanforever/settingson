@@ -15,11 +15,11 @@ rake db:migrate
 
 code:
 ```ruby
-Settings.server.host = '127.0.0.1'
-Settings.server.port = '8888'
+Settings.server.host = '127.0.0.1'  # => '127.0.0.1'
+Settings.server.port = '8888'       # => '8888'
 
-Settings.server.host        # => '127.0.0.1'
-Settings.server.port        # => '8888'
+Settings.server.host                # => '127.0.0.1'
+Settings.server.port                # => '8888'
 
 Settings.server.smtp.host = '127.0.0.1'
 Settings.server.smtp.port = 25
@@ -38,6 +38,13 @@ Settings.not_found.present? # => false
 
 # but
 Settings.not_found.class    # => Settings(id: integer, key: string, value: text, created_at: datetime, updated_at: datetime)
+
+Settings.all                # =>
+# [#<Settings id: 1, key: "server.host", value: "127.0.0.1", created_at: "2015-12-08 15:17:56", updated_at: "2015-12-08 15:17:56">,
+#  #<Settings id: 2, key: "server.port", value: "8888", created_at: "2015-12-08 15:17:56", updated_at: "2015-12-08 15:17:56">,
+#  #<Settings id: 3, key: "server.smtp.host", value: "127.0.0.1", created_at: "2015-12-08 15:18:21", updated_at: "2015-12-08 15:18:21">,
+#  #<Settings id: 4, key: "server.smtp.port", value: 25, created_at: "2015-12-08 15:18:22", updated_at: "2015-12-08 15:18:22">,
+#  #<Settings id: 5, key: "hello", value: :world, created_at: "2015-12-08 15:18:32", updated_at: "2015-12-08 15:18:32">]
 ```
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
