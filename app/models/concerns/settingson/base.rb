@@ -71,6 +71,21 @@ module Settingson::Base
 
   module ClassMethods
 
+    # Settings.defaults do
+    #   Settings.server.host? || Settings.server.host = 'host'
+    #   Settings.server.port? || Settings.server.port = 80
+    # end
+
+    def defaults(&block)
+      Rails.application.config.after_initialize do
+        begin
+          yield
+        rescue
+          Rails.logger.warn('Settingson::defaults failed')
+        end
+      end
+    end
+
     def from_hash(attributes)
       case attributes
       when Hash

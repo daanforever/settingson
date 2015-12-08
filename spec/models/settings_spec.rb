@@ -1,6 +1,14 @@
 require 'spec_helper'
 
 describe Settings do
+
+  describe 'Settings.defaults' do
+    # very bad spec. TODO: rewrite me
+    it 'not raises errors' do
+      expect{ Settings.default {} }.to_not raise_error
+    end
+  end
+
   it 'not raises error on create new instance of Settings' do
     expect{ Settings.new }.to_not raise_error
   end

@@ -66,6 +66,15 @@ end
 
 ## The initial values
 in config/initializers/settingson.rb
+
+```ruby
+  Settings.defaults do
+    Settings.server.smtp.host? || Settings.server.smtp.host = 'host'
+    Settings.server.smtp.port? || Settings.server.smtp.port = 25
+  end
+```
+
+Old way:
 ```ruby
 Rails.application.config.after_initialize do
   begin
