@@ -15,26 +15,26 @@ rake db:migrate
 
 code:
 ```ruby
-Settings.server.host = '127.0.0.1'  # => '127.0.0.1'
-Settings.server.port = '8888'       # => '8888'
+Settings.server.host = '127.0.0.1'        # => '127.0.0.1'
+Settings.server.port = '8888'             # => '8888'
 
-Settings.server.host                # => '127.0.0.1'
-Settings.server.port                # => '8888'
+Settings.server.host                      # => '127.0.0.1'
+Settings.server.port                      # => '8888'
 
-Settings.server.smtp.host = '127.0.0.1'
-Settings.server.smtp.port = 25
+Settings.server.smtp.host = '127.0.0.1'   # => '127.0.0.1'
+Settings.server.smtp.port = 25            # => 25
 
-Settings.server.smtp.host   # => "127.0.0.1"
-Settings.server.smtp.port   # => 25
+Settings.server.smtp.host                 # => "127.0.0.1"
+Settings.server.smtp.port                 # => 25
 
 Settings.from_hash({hello: :world})
-Settings.hello              # => :world
+Settings.hello                            # => :world
 
-Settings.not_found          # => ""
-Settings.not_found.nil?     # => true
-Settings.not_found.empty?   # => true
-Settings.not_found.blank?   # => true
-Settings.not_found.present? # => false
+Settings.not_found                        # => ""
+Settings.not_found.nil?                   # => true
+Settings.not_found.empty?                 # => true
+Settings.not_found.blank?                 # => true
+Settings.not_found.present?               # => false
 
 # but
 Settings.not_found.class    # => Settings(id: integer, key: string, value: text, created_at: datetime, updated_at: datetime)
