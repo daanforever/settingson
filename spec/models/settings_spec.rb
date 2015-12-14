@@ -69,4 +69,29 @@ describe Settings do
       expect( Settings.not_found.present? ).to be(false)
     end
   end
+
+  describe '::cached' do
+    it 'not raises error without params' do
+      expect{ Settings.cached }.to_not raise_error
+    end
+
+    it 'not raises error with params' do
+      expect{ Settings.cached(Random.rand(10)) }.to_not raise_error
+    end
+
+    it 'returns instance of self class' do
+      expect( Settings.cached ).to be_a(Settings)
+    end
+
+    it 'returns same value for complex key #1' do
+      word = Faker::Lorem.word
+      Settings.hello.hello = word
+      expect( Settings.cached.hello.hello ).to eq(word)
+    end
+    it 'returns same value for complex key #2' do
+      word = Faker::Lorem.word
+      Settings.i.hello = word
+      expect( Settings.cached.i.hello ).to eq(word)
+    end
+  end
 end

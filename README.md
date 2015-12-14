@@ -47,6 +47,26 @@ Settings.all                # =>
 #  #<Settings id: 5, key: "hello", value: :world, created_at: "2015-12-08 15:18:32", updated_at: "2015-12-08 15:18:32">]
 ```
 
+### Cached values
+
+Caching implemented via ActiveSupport::Cache::Store [(read more)](http://guides.rubyonrails.org/caching_with_rails.html).
+
+By default 10 seconds:
+```ruby
+Settings.hello.world = 'message'          # => 'message'
+Settings.cached.hello.world               # => 'message' with asking DB
+Settings.cached.hello.world               # => 'message' without asking DB
+sleep 11
+Settings.cached.hello.world               # => 'message' with asking DB
+```
+
+You can change time to Live:
+```ruby
+Settings.cached(30.minutes).hello.world   # => 'message'
+# same as
+Settings.cached(1800).hello.world         # => 'message'
+```
+
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
 ```ruby
