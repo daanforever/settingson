@@ -29,7 +29,7 @@ module Settingson::Base
     self.class.find_by(key: @settingson)
   end
 
-  def _settingson_cached(expires_in:)
+  def _settingson_cached(expires_in)
     @_settingson_cached = expires_in
     self
   end
@@ -158,7 +158,7 @@ module Settingson::Base
     end
 
     def cached(expires_in = 10.seconds)
-      new._settingson_cached(expires_in: expires_in)
+      new._settingson_cached(expires_in)
     end
 
   end # module ClassMethods

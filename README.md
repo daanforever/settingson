@@ -67,6 +67,14 @@ Settings.cached(30.minutes).hello.world   # => 'message'
 Settings.cached(1800).hello.world         # => 'message'
 ```
 
+Benchmark results:
+```ruby
+puts Benchmark.measure { 1.upto(10000){ Settings.hello.world }}
+# => 36.210000   0.680000  36.890000 ( 37.372218)
+puts Benchmark.measure { 1.upto(10000){ Settings.cached.hello.world }}
+# =>  7.140000   0.060000   7.200000 (  7.246746)
+```
+
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
 in view:
 ```ruby
