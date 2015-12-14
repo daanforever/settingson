@@ -36,16 +36,28 @@ describe Settings do
     expect( Settings.i.hello ).to eq(word)
   end
 
-  it 'destroys record with nil value #1' do
+  # it 'destroys record with nil value #1' do
+  #   word = Faker::Lorem.word
+  #   Settings.some = word
+  #   expect{ Settings.some = nil }.to change{ Settings.count }.by(-1)
+  # end
+  #
+  # it 'destroys record with nil value #2' do
+  #   word = Faker::Lorem.word
+  #   Settings.some.hello = word
+  #   expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(-1)
+  # end
+
+  it 'not destroys record with nil value #1' do
     word = Faker::Lorem.word
     Settings.some = word
-    expect{ Settings.some = nil }.to change{ Settings.count }.by(-1)
+    expect{ Settings.some = nil }.to change{ Settings.count }.by(0)
   end
 
-  it 'destroys record with nil value #2' do
+  it 'not destroys record with nil value #2' do
     word = Faker::Lorem.word
     Settings.some.hello = word
-    expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(-1)
+    expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(0)
   end
 
   describe 'with empty value' do
