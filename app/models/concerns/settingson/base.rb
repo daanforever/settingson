@@ -87,17 +87,17 @@ module Settingson::Base
   rescue NoMethodError
     case symbol.to_s
     when /(.+)=/  # setter
-      _settingson_find_or_create($1)
+      _settingson_variable_update($1)
       self.class.find_or_create_by(key: @settingson).update(value: args.first)
       Rails.cache.delete("settingson_cache/#{@settingson}")
     when /(.+)\?$/  # returns boolean
-      _settingson_find_or_create($1)
+      _settingson_variable_update($1)
       _settingson_value.present?
     when /(.+)\!$/  # returns self or nil
-      _settingson_find_or_create($1)
+      _settingson_variable_update($1)
       _settingson_value
     else # returns values or self
-      _settingson_find_or_create(symbol.to_s)
+      _settingson_variable_update(symbol.to_s)
       record = _settingson_value
       record ? record.value : self
     end
@@ -122,7 +122,7 @@ module Settingson::Base
     end
   end
 
-  def _settingson_find_or_create(key)
+  def _settingson_variable_update(key)
     if @settingson.blank?
       @settingson = key
     else
