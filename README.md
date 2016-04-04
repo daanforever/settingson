@@ -93,9 +93,9 @@ in controller:
 class SettingsController < ApplicationController
   def update
     if Settings.from_hash(params[:settings])
-      flash[:notice] = t('settings_updated', default: 'Settings updated successfully')
+      flash.now[:notice] = t('settings_updated', default: 'Settings updated successfully')
     else
-      flash[:alert]  = t('settings_not_updated', default: 'Settings not updated')
+      flash.now[:alert]  = t('settings_not_updated', default: 'Settings not updated')
     end
     render :edit
   end
