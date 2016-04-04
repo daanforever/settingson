@@ -56,9 +56,9 @@ module Settingson::Base
     def method_missing(symbol, *args)
       super
     rescue NameError
-      self.new.send(symbol)
+      self.new.send(symbol, *args)
     rescue NoMethodError
-      self.new.send(symbol)
+      self.new.send(symbol, *args)
     end
 
 
@@ -67,10 +67,10 @@ module Settingson::Base
   included do
     attr_accessor :settingson
     serialize     :value
-    before_destroy :delete_from_cache
+    before_destroy :delete_cached
   end
 
-  def delete_from_cache
+  def delete_cached
     Rails.cache.delete("#{self.class.configure.cache.namespace}/#{self.key}")
     Rails.logger.debug("#{self.class.name}: instance delete_from_cache '#{self.key}'")
   end
@@ -93,17 +93,6 @@ module Settingson::Base
 
   alias empty? nil?
 
-  def cached_value(key)
-    Rails.cache.fetch(
-      "#{self.class.configure.cache.namespace}/#{key}",
-      expires_in:         self.class.configure.cache.expires,
-      race_condition_ttl: self.class.configure.cache.race_condition_ttl
-    ) do
-      Rails.logger.debug("#{self.class.name}: fresh value '#{key}'")
-      self.class.find_by(key: key)
-    end
-  end
-
   def method_missing(symbol, *args)
     super
   rescue NameError
@@ -112,19 +101,38 @@ module Settingson::Base
     rescue_action(symbol.to_s, args.first)
   end # method_missing
 
+  protected
   def rescue_action(key, value)
     case key
     when /(.+)=/  # setter
       Rails.logger.debug("#{self.class.name}: setter '#{$1}'")
       @settingson = [@settingson, $1].compact.join('.')
-      record = self.class.find_or_create_by(key: @settingson).update(value: value)
+      record = self.class.find_or_create_by(key: @settingson)
+      record.update(value: value)
       Rails.cache.write("#{self.class.configure.cache.namespace}/#{@settingson}", record)
+      Rails.logger.debug("#{self.class.configure.cache.namespace}/#{@settingson} = #{record}")
     else # returns values or self
       Rails.logger.debug("#{self.class.name}: getter '#{key}'")
       @settingson = [@settingson, key].compact.join('.')
-      record = cached_value(@settingson)
-      record ? record.value : self
+      cached?.present? ? cached.value : self
     end
   end
 
+  def cached?
+    result = Rails.cache.exist?("#{self.class.configure.cache.namespace}/#{@settingson}")
+    Rails.logger.debug("#{self.class.name}: exists? '#{@settingson}' == '#{result.to_s}'")
+    result
+  end
+
+  def cached
+    Rails.logger.debug("#{self.class.name}: cached '#{@settingson}'")
+    Rails.cache.fetch(
+      "#{self.class.configure.cache.namespace}/#{@settingson}",
+      expires_in:         self.class.configure.cache.expires,
+      race_condition_ttl: self.class.configure.cache.race_condition_ttl
+    ) do
+      Rails.logger.debug("#{self.class.name}: fresh value '#{@settingson}'")
+      self.class.find_by(key: @settingson)
+    end
+  end
 end # Settingson::Base
