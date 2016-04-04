@@ -105,30 +105,24 @@ module Settingson::Base
   def rescue_action(key, value)
     case key
     when /(.+)=/  # setter
-      Rails.logger.debug("#{self.class.name}: setter '#{$1}'")
       @settingson = [@settingson, $1].compact.join('.')
       record = self.class.find_or_create_by(key: @settingson)
       record.update(value: value)
       Rails.cache.write("#{self.class.configure.cache.namespace}/#{@settingson}", record)
     else # returns values or self
-      Rails.logger.debug("#{self.class.name}: getter '#{key}'")
       @settingson = [@settingson, key].compact.join('.')
-      cached? ? cached.value : self
+      cached = cached_value
+      cached ? cached.value : self
     end
   end
 
-  def cached?
-    Rails.cache.exist?("#{self.class.configure.cache.namespace}/#{@settingson}")
-  end
-
-  def cached
+  def cached_value
     Rails.logger.debug("#{self.class.name}: cached '#{@settingson}'")
     Rails.cache.fetch(
       "#{self.class.configure.cache.namespace}/#{@settingson}",
       expires_in:         self.class.configure.cache.expires,
       race_condition_ttl: self.class.configure.cache.race_condition_ttl
     ) do
-      Rails.logger.debug("#{self.class.name}: fresh value '#{@settingson}'")
       self.class.find_by(key: @settingson)
     end
   end
