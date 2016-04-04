@@ -6,6 +6,39 @@
 
 Simple settings management for applications (Ruby on Rails 4 with ActiveRecord)
 
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+    gem 'settingson'
+```
+
+And then execute:
+
+```console
+    $ bundle
+```
+
+Or install it yourself as:
+
+```console
+    $ gem install settingson
+```
+
+## Usage
+
+```console
+rails g settingson MODEL
+```
+Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but it may also be `Configuration` or something else. This will create a model (if one does not exist) and configure it with default options.
+
+Next, you'll usually run
+```console
+rake db:migrate
+```
+as the generator will have created a migration file (if your ORM supports them).
+
 ## Example
 
 shell commands:
@@ -48,34 +81,6 @@ Settings.all                # =>
 #  #<Settings id: 3, key: "server.smtp.host", value: "127.0.0.1", created_at: "2015-12-08 15:18:21", updated_at: "2015-12-08 15:18:21">,
 #  #<Settings id: 4, key: "server.smtp.port", value: 25, created_at: "2015-12-08 15:18:22", updated_at: "2015-12-08 15:18:22">,
 #  #<Settings id: 5, key: "hello", value: :world, created_at: "2015-12-08 15:18:32", updated_at: "2015-12-08 15:18:32">]
-```
-
-### Cached values
-
-Caching implemented via ActiveSupport::Cache::Store [(read more)](http://guides.rubyonrails.org/caching_with_rails.html).
-
-By default 10 seconds:
-```ruby
-Settings.hello.world = 'message'          # => 'message'
-Settings.cached.hello.world               # => 'message' with asking DB
-Settings.cached.hello.world               # => 'message' without asking DB
-sleep 11
-Settings.cached.hello.world               # => 'message' with asking DB
-```
-
-You can change time to Live:
-```ruby
-Settings.cached(30.minutes).hello.world   # => 'message'
-# same as
-Settings.cached(1800).hello.world         # => 'message'
-```
-
-Benchmark results:
-```ruby
-puts Benchmark.measure { 1.upto(10000){ Settings.hello.world }}
-# => 36.210000   0.680000  36.890000 ( 37.372218)
-puts Benchmark.measure { 1.upto(10000){ Settings.cached.hello.world }}
-# =>  7.140000   0.060000   7.200000 (  7.246746)
 ```
 
 ### Using with [Simple Form](https://github.com/plataformatec/simple_form) and [Haml](https://github.com/haml/haml)
@@ -124,39 +129,6 @@ Rails.application.config.after_initialize do
   end
 end
 ```
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-    gem 'settingson'
-```
-
-And then execute:
-
-```console
-    $ bundle
-```
-
-Or install it yourself as:
-
-```console
-    $ gem install settingson
-```
-
-## Usage
-
-```console
-rails g settingson MODEL
-```
-Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but it may also be `Configuration` or something else. This will create a model (if one does not exist) and configure it with default options.
-
-Next, you'll usually run
-```console
-rake db:migrate
-```
-as the generator will have created a migration file (if your ORM supports them).
 
 ## Contributing
 
