@@ -38,6 +38,11 @@ module Settingson::Base
 
     # Settings.from_hash('smtp.host' => 'host')
 
+    def cache
+      ActiveSupport::Deprecation.warn('Now caching is enabled by default')
+      self.new
+    end
+
     def from_hash(attributes)
       case attributes
       when Hash
