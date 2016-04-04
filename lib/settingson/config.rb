@@ -4,6 +4,8 @@ class Settingson::Config
   def initialize
     @cache = OpenStruct.new(expires_in: 60.seconds,
                             race_condition_ttl: 10.seconds,
-                            enabled: true)
+                            enabled: true,
+                            namespace: "settingson/#{Rails.env}"
+                            )
   end
 end

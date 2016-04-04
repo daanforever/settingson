@@ -55,7 +55,7 @@ module Settingson::Base
 
     def cached_value(key)
       Rails.cache.fetch(
-        "settingson_cache/#{key}",
+        "#{configure.cache.namespace}/#{key}",
         expires_in:         configure.cache.expires,
         race_condition_ttl: configure.cache.race_condition_ttl
       ) do
@@ -72,7 +72,7 @@ module Settingson::Base
         Rails.logger.debug("#{name}: class method_missing setter '#{$1}'")
         record = find_or_create_by(key: $1)
         record.update(value: args.first)
-        Rails.cache.write("settingson_cache/#{$1}", record)
+        Rails.cache.write("#{configure.cache.namespace}/#{$1}", record)
       else # getter
         Rails.logger.debug("#{name}: class method_missing getter '#{symbol.to_s}'")
         record = cached_value(symbol.to_s)
@@ -89,7 +89,7 @@ module Settingson::Base
   end
 
   def delete_from_cache
-    Rails.cache.delete("settingson_cache/#{self.key}")
+    Rails.cache.delete("#{configure.cache.namespace}/#{self.key}")
     Rails.logger.debug("#{self.class.name}: instance delete_from_cache '#{self.key}'")
   end
 
@@ -120,7 +120,7 @@ module Settingson::Base
       @settingson = [@settingson, $1.to_s].join('.')
       record = self.class.find_or_create_by(key: @settingson)
       record.update(value: args.first)
-      Rails.cache.write("settingson_cache/#{@settingson}", record)
+      Rails.cache.write("#{configure.cache.namespace}/#{@settingson}", record)
     else # returns values or self
       Rails.logger.debug("#{self.class.name}: instance method_missing getter '#{symbol.to_s}'")
       @settingson = [@settingson, symbol.to_s].join('.')
