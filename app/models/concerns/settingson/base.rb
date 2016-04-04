@@ -110,18 +110,15 @@ module Settingson::Base
       record = self.class.find_or_create_by(key: @settingson)
       record.update(value: value)
       Rails.cache.write("#{self.class.configure.cache.namespace}/#{@settingson}", record)
-      Rails.logger.debug("#{self.class.configure.cache.namespace}/#{@settingson} = #{record}")
     else # returns values or self
       Rails.logger.debug("#{self.class.name}: getter '#{key}'")
       @settingson = [@settingson, key].compact.join('.')
-      cached?.present? ? cached.value : self
+      cached? ? cached.value : self
     end
   end
 
   def cached?
-    result = Rails.cache.exist?("#{self.class.configure.cache.namespace}/#{@settingson}")
-    Rails.logger.debug("#{self.class.name}: exists? '#{@settingson}' == '#{result.to_s}'")
-    result
+    Rails.cache.exist?("#{self.class.configure.cache.namespace}/#{@settingson}")
   end
 
   def cached
