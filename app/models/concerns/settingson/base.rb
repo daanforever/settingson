@@ -89,7 +89,7 @@ module Settingson::Base
   end
 
   def delete_from_cache
-    Rails.cache.delete("#{configure.cache.namespace}/#{self.key}")
+    Rails.cache.delete("#{self.class.configure.cache.namespace}/#{self.key}")
     Rails.logger.debug("#{self.class.name}: instance delete_from_cache '#{self.key}'")
   end
 
@@ -120,7 +120,7 @@ module Settingson::Base
       @settingson = [@settingson, $1.to_s].join('.')
       record = self.class.find_or_create_by(key: @settingson)
       record.update(value: args.first)
-      Rails.cache.write("#{configure.cache.namespace}/#{@settingson}", record)
+      Rails.cache.write("#{self.class.configure.cache.namespace}/#{@settingson}", record)
     else # returns values or self
       Rails.logger.debug("#{self.class.name}: instance method_missing getter '#{symbol.to_s}'")
       @settingson = [@settingson, symbol.to_s].join('.')
