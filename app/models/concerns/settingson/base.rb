@@ -38,7 +38,7 @@ module Settingson::Base
 
     # Settings.from_hash('smtp.host' => 'host')
 
-    def cache
+    def cached
       ActiveSupport::Deprecation.warn('Now caching is enabled by default')
       self.new
     end
