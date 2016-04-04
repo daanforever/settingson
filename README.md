@@ -6,6 +6,39 @@
 
 Simple settings management for applications (Ruby on Rails 4 with ActiveRecord)
 
+## Installation
+
+Add this line to your application's Gemfile:
+
+```ruby
+    gem 'settingson'
+```
+
+And then execute:
+
+```console
+    $ bundle
+```
+
+Or install it yourself as:
+
+```console
+    $ gem install settingson
+```
+
+## Usage
+
+```console
+rails g settingson MODEL
+```
+Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but it may also be `Configuration` or something else. This will create a model (if one does not exist) and configure it with default options.
+
+Next, you'll usually run
+```console
+rake db:migrate
+```
+as the generator will have created a migration file (if your ORM supports them).
+
 ## Example
 
 shell commands:
@@ -96,39 +129,6 @@ Rails.application.config.after_initialize do
   end
 end
 ```
-
-## Installation
-
-Add this line to your application's Gemfile:
-
-```ruby
-    gem 'settingson'
-```
-
-And then execute:
-
-```console
-    $ bundle
-```
-
-Or install it yourself as:
-
-```console
-    $ gem install settingson
-```
-
-## Usage
-
-```console
-rails g settingson MODEL
-```
-Replace MODEL by the class name used for the applications settings, it's frequently `Settings` but it may also be `Configuration` or something else. This will create a model (if one does not exist) and configure it with default options.
-
-Next, you'll usually run
-```console
-rake db:migrate
-```
-as the generator will have created a migration file (if your ORM supports them).
 
 ## Contributing
 
