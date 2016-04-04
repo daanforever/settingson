@@ -4,32 +4,59 @@ module Settingson::Base
 
   module ClassMethods
 
-    # Settings.defaults do
-    #   Settings.server.host? || Settings.server.host = 'host'
-    #   Settings.server.port? || Settings.server.port = 80
+    # Settings.configure do |config|
+    #   config.cache.expires = 600   # default: 600
+    #   config.cache.enabled = true  # default: true
     # end
+    #
+    # # or
+    #
+    # Settings.configure.expires = 600
+    # Settings.configure.enabled = true
 
+    def configure
+      @_settings ||= ::Settingson::Config.new
+      yield @_settings if block_given?
+      @_settings
+    end
+
+    # Settings.defaults do |settings|
+    #   settings.server.host = 'host'
+    #   settings.server.port = 80
+    # end
+    # FIXME: not ready yet
     def defaults
       Rails.application.config.after_initialize do
         begin
-          yield
+          yield new(settingson: 'defaults') if block_given?
         rescue
           Rails.logger.warn('Settingson::defaults failed')
         end
       end
+      true
     end
+
+    # Settings.from_hash('smtp.host' => 'host')
 
     def from_hash(attributes)
       case attributes
       when Hash
         attributes.map{|k,v| find_or_create_by(key: k).update!(value: v)}
+        true
       else
-        false
+        raise ArgumentError, 'Hash required', caller
       end
     end
 
-    def cached(expires_in = 10.seconds)
-      new._settingson_cached(expires_in)
+    def cached_value(key)
+      Rails.cache.fetch(
+        "settingson_cache/#{key}",
+        expires_in:         configure.cache.expires,
+        race_condition_ttl: configure.cache.race_condition_ttl
+      ) do
+        Rails.logger.debug("#{name}: cached_value query '#{key}'")
+        find_by(key: key)
+      end
     end
 
     def method_missing(symbol, *args)
@@ -37,17 +64,13 @@ module Settingson::Base
     rescue NoMethodError
       case symbol.to_s
       when /(.+)=/  # setter
-        self.find_or_create_by(
-          key: $1
-        ).update(
-          value: args.first
-        )
-      when /(.+)\?$/  # returns boolean
-        find_by(key: $1).present?
-      when /(.+)\!$/  # returns self or nil
-        find_by(key: $1)
+        Rails.logger.debug("#{name}: class method_missing setter '#{$1}'")
+        record = find_or_create_by(key: $1)
+        record.update(value: args.first)
+        Rails.cache.write("settingson_cache/#{$1}", record)
       else # getter
-        record = find_by(key: symbol.to_s)
+        Rails.logger.debug("#{name}: class method_missing getter '#{symbol.to_s}'")
+        record = cached_value(symbol.to_s)
         record ? record.value : new(settingson: symbol.to_s)
       end
     end
@@ -57,6 +80,12 @@ module Settingson::Base
   included do
     attr_accessor :settingson
     serialize     :value
+    before_destroy :delete_from_cache
+  end
+
+  def delete_from_cache
+    Rails.cache.delete("settingson_cache/#{self.key}")
+    Rails.logger.debug("#{self.class.name}: instance delete_from_cache '#{self.key}'")
   end
 
   def to_s
@@ -77,57 +106,22 @@ module Settingson::Base
 
   alias empty? nil?
 
-  def _settingson_cached(expires_in)
-    @_settingson_cached = expires_in
-    self
-  end
-
   def method_missing(symbol, *args)
     super
   rescue NoMethodError
     case symbol.to_s
     when /(.+)=/  # setter
-      _settingson_variable_update($1)
-      self.class.find_or_create_by(key: @settingson).update(value: args.first)
-      Rails.cache.delete("settingson_cache/#{@settingson}")
-    when /(.+)\?$/  # returns boolean
-      _settingson_variable_update($1)
-      _settingson_value.present?
-    when /(.+)\!$/  # returns self or nil
-      _settingson_variable_update($1)
-      _settingson_value
+      Rails.logger.debug("#{self.class.name}: instance method_missing setter '#{$1}'")
+      @settingson = [@settingson, $1.to_s].join('.')
+      record = self.class.find_or_create_by(key: @settingson)
+      record.update(value: args.first)
+      Rails.cache.write("settingson_cache/#{@settingson}", record)
     else # returns values or self
-      _settingson_variable_update(symbol.to_s)
-      record = _settingson_value
+      Rails.logger.debug("#{self.class.name}: instance method_missing getter '#{symbol.to_s}'")
+      @settingson = [@settingson, symbol.to_s].join('.')
+      record = self.class.cached_value(@settingson)
       record ? record.value : self
     end
   end # method_missing
-
-  protected
-  def _settingson_fresh_value
-    self.class.find_by(key: @settingson)
-  end
-
-  def _settingson_cached_value
-    Rails.cache.fetch("settingson_cache/#{@settingson}", expires_in: @_settingson_cached) do
-      _settingson_fresh_value
-    end
-  end
-
-  def _settingson_value
-    if @_settingson_cached
-      _settingson_cached_value
-    else
-      _settingson_fresh_value
-    end
-  end
-
-  def _settingson_variable_update(key)
-    if @settingson.blank?
-      @settingson = key
-    else
-      @settingson += ".#{key}"
-    end
-  end
 
 end # Settingson::Base

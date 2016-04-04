@@ -3,61 +3,48 @@ require 'spec_helper'
 describe Settings do
 
   describe 'Settings.defaults' do
-    # very bad spec. TODO: rewrite me
     it 'not raises errors' do
       expect{ Settings.default {} }.to_not raise_error
     end
   end
 
-  it 'not raises error on create new instance of Settings' do
-    expect{ Settings.new }.to_not raise_error
-  end
-  it 'not raises error on create new element' do
-    expect{ Settings.hello = Faker::Lorem.word }.to_not raise_error
-  end
-  it 'returns same Fixnum' do
-    word = Faker::Lorem.word
-    Settings.number = 100
-    expect( Settings.number ).to eq(100)
-  end
-  it 'returns same String' do
-    word = Faker::Lorem.word
-    Settings.hello = word
-    expect( Settings.hello ).to eq(word)
-  end
-  it 'returns same value for complex key #1' do
-    word = Faker::Lorem.word
-    Settings.hello.hello = word
-    expect( Settings.hello.hello ).to eq(word)
-  end
-  it 'returns same value for complex key #2' do
-    word = Faker::Lorem.word
-    Settings.i.hello = word
-    expect( Settings.i.hello ).to eq(word)
-  end
+  describe 'general' do
+    it 'not raises error on create new instance of Settings' do
+      expect{ Settings.new }.to_not raise_error
+    end
+    it 'not raises error on create new element' do
+      expect{ Settings.hello = Faker::Lorem.word }.to_not raise_error
+    end
+    it 'returns same Fixnum' do
+      word = Faker::Lorem.word
+      Settings.number = 100
+      expect( Settings.number ).to eq(100)
+    end
+    it 'returns same String' do
+      word = Faker::Lorem.word
+      Settings.hello = word
+      expect( Settings.hello ).to eq(word)
+    end
+    it 'returns same value for complex key #1' do
+      word = Faker::Lorem.word
+      Settings.hello.hello = word
+      expect( Settings.hello.hello ).to eq(word)
+    end
+    it 'returns same value for complex key #2' do
+      word = Faker::Lorem.word
+      Settings.i.hello = word
+      expect( Settings.i.hello ).to eq(word)
+    end
+    it 'not destroys record with nil value #1' do
+      word = Faker::Lorem.word
+      Settings.some = word
+      expect{ Settings.some = nil }.to change{ Settings.count }.by(0)
+    end
 
-  # it 'destroys record with nil value #1' do
-  #   word = Faker::Lorem.word
-  #   Settings.some = word
-  #   expect{ Settings.some = nil }.to change{ Settings.count }.by(-1)
-  # end
-  #
-  # it 'destroys record with nil value #2' do
-  #   word = Faker::Lorem.word
-  #   Settings.some.hello = word
-  #   expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(-1)
-  # end
-
-  it 'not destroys record with nil value #1' do
-    word = Faker::Lorem.word
-    Settings.some = word
-    expect{ Settings.some = nil }.to change{ Settings.count }.by(0)
-  end
-
-  it 'not destroys record with nil value #2' do
-    word = Faker::Lorem.word
-    Settings.some.hello = word
-    expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(0)
+    it 'not destroys record with nil value #2' do
+      Settings.some.hello = Faker::Lorem.word
+      expect{ Settings.some.hello = nil }.to change{ Settings.count }.by(0)
+    end
   end
 
   describe 'with empty value' do
@@ -82,28 +69,12 @@ describe Settings do
     end
   end
 
-  describe '::cached' do
-    it 'not raises error without params' do
-      expect{ Settings.cached }.to_not raise_error
-    end
-
-    it 'not raises error with params' do
-      expect{ Settings.cached(Random.rand(10)) }.to_not raise_error
-    end
-
-    it 'returns instance of self class' do
-      expect( Settings.cached ).to be_a(Settings)
-    end
-
-    it 'returns same value for complex key #1' do
-      word = Faker::Lorem.word
-      Settings.hello.hello = word
-      expect( Settings.cached.hello.hello ).to eq(word)
-    end
-    it 'returns same value for complex key #2' do
-      word = Faker::Lorem.word
-      Settings.i.hello = word
-      expect( Settings.cached.i.hello ).to eq(word)
+  describe 'caching' do
+    it 'delete key before destroy' do
+      Settings.some.hello = Faker::Lorem.word
+      Settings.all.each{|e| e.destroy! }
+      expect( Rails.cache.exist?('settingson_cache/some.hello') ).to be false
     end
   end
+
 end

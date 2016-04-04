@@ -38,6 +38,7 @@ RSpec.configure do |config|
 
   config.around(:each) do |example|
     DatabaseCleaner.cleaning do
+      Rails.cache.clear
       example.run
     end
   end

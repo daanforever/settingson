@@ -1,4 +1,5 @@
 require "settingson/version"
+require 'settingson/config'
 
 module Settingson
   if defined?(Rails)
