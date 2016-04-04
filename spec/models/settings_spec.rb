@@ -75,6 +75,12 @@ describe Settings do
       Settings.all.each{|e| e.destroy! }
       expect( Rails.cache.exist?('settingson_cache/some.hello') ).to be false
     end
+
+    it 'returns empty value after destroy' do
+      Settings.some.hello = Faker::Lorem.word
+      Settings.all.each{|e| e.destroy! }
+      expect( Settings.some.hello.to_s ).to be_empty
+    end
   end
 
 end
