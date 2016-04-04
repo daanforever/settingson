@@ -53,32 +53,14 @@ module Settingson::Base
       end
     end
 
-    def cached_value(key)
-      Rails.cache.fetch(
-        "#{configure.cache.namespace}/#{key}",
-        expires_in:         configure.cache.expires,
-        race_condition_ttl: configure.cache.race_condition_ttl
-      ) do
-        Rails.logger.debug("#{name}: cached_value query '#{key}'")
-        find_by(key: key)
-      end
-    end
-
     def method_missing(symbol, *args)
       super
+    rescue NameError
+      self.new.send(symbol)
     rescue NoMethodError
-      case symbol.to_s
-      when /(.+)=/  # setter
-        Rails.logger.debug("#{name}: class method_missing setter '#{$1}'")
-        record = find_or_create_by(key: $1)
-        record.update(value: args.first)
-        Rails.cache.write("#{configure.cache.namespace}/#{$1}", record)
-      else # getter
-        Rails.logger.debug("#{name}: class method_missing getter '#{symbol.to_s}'")
-        record = cached_value(symbol.to_s)
-        record ? record.value : new(settingson: symbol.to_s)
-      end
+      self.new.send(symbol)
     end
+
 
   end # module ClassMethods
 
@@ -111,22 +93,38 @@ module Settingson::Base
 
   alias empty? nil?
 
+  def cached_value(key)
+    Rails.cache.fetch(
+      "#{self.class.configure.cache.namespace}/#{key}",
+      expires_in:         self.class.configure.cache.expires,
+      race_condition_ttl: self.class.configure.cache.race_condition_ttl
+    ) do
+      Rails.logger.debug("#{self.class.name}: fresh value '#{key}'")
+      self.class.find_by(key: key)
+    end
+  end
+
   def method_missing(symbol, *args)
     super
+  rescue NameError
+    rescue_action(symbol.to_s, args.first)
   rescue NoMethodError
-    case symbol.to_s
+    rescue_action(symbol.to_s, args.first)
+  end # method_missing
+
+  def rescue_action(key, value)
+    case key
     when /(.+)=/  # setter
-      Rails.logger.debug("#{self.class.name}: instance method_missing setter '#{$1}'")
-      @settingson = [@settingson, $1.to_s].join('.')
-      record = self.class.find_or_create_by(key: @settingson)
-      record.update(value: args.first)
+      Rails.logger.debug("#{self.class.name}: setter '#{$1}'")
+      @settingson = [@settingson, $1].compact.join('.')
+      record = self.class.find_or_create_by(key: @settingson).update(value: value)
       Rails.cache.write("#{self.class.configure.cache.namespace}/#{@settingson}", record)
     else # returns values or self
-      Rails.logger.debug("#{self.class.name}: instance method_missing getter '#{symbol.to_s}'")
-      @settingson = [@settingson, symbol.to_s].join('.')
-      record = self.class.cached_value(@settingson)
+      Rails.logger.debug("#{self.class.name}: getter '#{key}'")
+      @settingson = [@settingson, key].compact.join('.')
+      record = cached_value(@settingson)
       record ? record.value : self
     end
-  end # method_missing
+  end
 
 end # Settingson::Base
