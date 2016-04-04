@@ -117,12 +117,12 @@ module Settingson::Base
   end
 
   def cached_value
-    Rails.logger.debug("#{self.class.name}: cached '#{@settingson}'")
     Rails.cache.fetch(
       "#{self.class.configure.cache.namespace}/#{@settingson}",
       expires_in:         self.class.configure.cache.expires,
       race_condition_ttl: self.class.configure.cache.race_condition_ttl
     ) do
+      Rails.logger.debug("#{self.class.name}: fresh '#{@settingson}'")
       self.class.find_by(key: @settingson)
     end
   end
