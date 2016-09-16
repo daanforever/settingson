@@ -1,7 +1,14 @@
 language: ruby
+
 sudo: false
+cache: bundler
+
+script: bundle exec rspec
+
 rvm:
-  - 2.0
   - 2.1
   - 2.2
-script: rspec
+
+gemfile:
+  - gemfiles/4.2.gemfile
+  - gemfiles/5.0.gemfile
