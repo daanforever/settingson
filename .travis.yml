@@ -11,3 +11,6 @@ rvm:
 gemfile:
   - gemfiles/4.2.gemfile
   - gemfiles/5.0.gemfile
+
+env:
+  - CODECLIMATE_REPO_TOKEN=620b22e287791de2c9f8a522182ddf57098302ff8958768f8192eaaa7d8a685d
