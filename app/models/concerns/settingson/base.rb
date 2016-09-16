@@ -75,13 +75,17 @@ module Settingson::Base
   included do
     attr_accessor  :settingson
     serialize      :value
-    before_destroy :delete_cached
+    before_destroy :__delete_cached
   end
 
-  def delete_cached
+  def __debug(message)
+    Rails.logger.debug(message) if self.class.configure.debug
+  end
+
+  def __delete_cached
     cache_key = "#{self.class.configure.cache.namespace}/#{self.key}"
     Rails.cache.delete(cache_key)
-    Rails.logger.debug("#{self.class.name}: delete '#{self.key}' '#{cache_key}'")
+    __debug("#{self.class.name}: delete '#{self.key}' '#{cache_key}'")
   end
 
   def to_s
@@ -105,51 +109,51 @@ module Settingson::Base
   def method_missing(symbol, *args)
     super
   rescue NameError
-    rescue_action(symbol.to_s, args.first)
+    __rescue_action(symbol.to_s, args.first)
   rescue NoMethodError
-    rescue_action(symbol.to_s, args.first)
+    __rescue_action(symbol.to_s, args.first)
   end # method_missing
 
   protected
 
-  def cached_key
+  def __cached_key
     [ self.class.configure.cache.namespace, @settingson ].join('/')
   end
 
-  def rescue_action(key, value)
+  def __rescue_action(key, value)
     case key
     when /(.+)=/  # setter
       @settingson = [@settingson, $1].compact.join('.')
       record = self.class.find_or_create_by!(key: @settingson)
       record.update!(value: value)
-      Rails.cache.write(cached_key, value)
-      Rails.logger.debug("#{self.class.name}##{__method__} setter '#{cached_key}'")
+      Rails.cache.write(__cached_key, value)
+      __debug("#{self.class.name}##{__method__} setter '#{__cached_key}'")
       record.value
     else # returns values or self
       @settingson = [@settingson, key].compact.join('.')
-      Rails.logger.debug("#{self.class.name}##{__method__} getter '#{@settingson}'")
-      cached_value_or_self
+      __debug("#{self.class.name}##{__method__} getter '#{@settingson}'")
+      __cached_value_or_self
     end
   end
 
-  def cached_value_or_self
-    result = cached_value
+  def __cached_value_or_self
+    result = __cached_value
     result.is_a?(ActiveRecord::RecordNotFound) ? self : result
   end
 
-  def cached_value
-    Rails.logger.debug("#{self.class.name}##{__method__} '#{@settingson}'")
+  def __cached_value
+    __debug("#{self.class.name}##{__method__} '#{@settingson}'")
     Rails.cache.fetch(
-      cached_key,
+      __cached_key,
       expires_in:         self.class.configure.cache.expires,
       race_condition_ttl: self.class.configure.cache.race_condition_ttl
     ) do
-      Rails.logger.debug("#{self.class.name}: fresh '#{@settingson}'")
-      fresh_value
+      __debug("#{self.class.name}: fresh '#{@settingson}'")
+      __fresh_value
     end
   end
 
-  def fresh_value
+  def __fresh_value
     self.class.find_by!(key: @settingson).value
   rescue ActiveRecord::RecordNotFound
     ActiveRecord::RecordNotFound.new

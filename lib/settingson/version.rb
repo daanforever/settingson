@@ -1,3 +1,3 @@
 module Settingson
-  VERSION = "1.5.14"
+  VERSION = "1.6.0"
 end
