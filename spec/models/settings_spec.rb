@@ -79,7 +79,19 @@ describe Settings do
     it 'returns empty value after destroy' do
       Settings.some.hello = Faker::Lorem.word
       Settings.all.each{|e| e.destroy! }
-      expect( Settings.some.hello.to_s ).to be_empty
+      expect( Settings.some.hello ).to be_empty
+    end
+
+    it 'clear cache on ::delete_all for simple key' do
+      Settings.hello = Faker::Lorem.word
+      Settings.delete_all
+      expect( Settings.hello ).to be_empty
+    end
+
+    it 'clear cache on ::delete_all for complex key' do
+      Settings.some.hello = Faker::Lorem.word
+      Settings.delete_all
+      expect( Settings.some.hello ).to be_empty
     end
   end
 

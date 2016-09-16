@@ -36,6 +36,13 @@ module Settingson::Base
       true
     end
 
+    # Settings.delete_all
+    # Delete cached items before super
+    def delete_all
+      Rails.cache.delete_matched(/#{self.configure.cache.namespace}/)
+      super
+    end
+
     # Settings.from_hash('smtp.host' => 'host')
 
     def cached(*args)
@@ -66,8 +73,8 @@ module Settingson::Base
   end # module ClassMethods
 
   included do
-    attr_accessor :settingson
-    serialize     :value
+    attr_accessor  :settingson
+    serialize      :value
     before_destroy :delete_cached
   end
 
