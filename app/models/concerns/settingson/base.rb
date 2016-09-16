@@ -24,7 +24,6 @@ module Settingson::Base
     #   settings.server.host = 'host'
     #   settings.server.port = 80
     # end
-    # FIXME: not ready yet
     def defaults
       Rails.application.config.after_initialize do
         begin
@@ -45,7 +44,7 @@ module Settingson::Base
 
     # Settings.from_hash('smtp.host' => 'host')
 
-    def cached(*args)
+    def cached(*)
       ActiveSupport::Deprecation.warn('Now caching is enabled by default')
       self.new
     end
