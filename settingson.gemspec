@@ -1,7 +1,7 @@
 # coding: utf-8
-lib = File.expand_path('../lib', __FILE__)
+lib = File.expand_path("../lib", __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'settingson/version'
+require "settingson/version"
 
 Gem::Specification.new do |spec|
   spec.name          = "settingson"
@@ -18,12 +18,13 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib", "app/models/concerns"]
 
-  spec.required_ruby_version = '>= 2.0'
-  spec.add_runtime_dependency 'rails', '>= 4.0'
+  spec.required_ruby_version = ">= 2.0"
+  spec.add_runtime_dependency "rails", ">= 4.0"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bundler", ">= 1.6"
   spec.add_development_dependency "rails-dummy"
-  spec.add_development_dependency "rspec-rails"
+  spec.add_development_dependency "rspec", "~> 3.5"
+  spec.add_development_dependency "rspec-rails", "~> 3.5"
   spec.add_development_dependency "sqlite3"
   spec.add_development_dependency "spring-commands-rspec"
   spec.add_development_dependency "database_cleaner"
