@@ -2,9 +2,31 @@ require 'spec_helper'
 
 describe Settings do
 
-  describe 'Settings.defaults' do
-    it 'not raises errors' do
-      expect{ Settings.default {} }.to_not raise_error
+  describe '::defaults' do
+    it 'not raises errors without parameters' do
+      expect{ Settings.defaults {} }.to_not raise_error
+    end
+
+    it 'returns default value for simple value' do
+      word = Faker::Lorem.word
+      Settings.defaults{|s| s.cached_key = word}
+      p Settings.all
+      expect( Settings.cached_key ).to eq(word)
+    end
+
+    it 'returns default value for complex value' do
+      word = Faker::Lorem.word
+      Settings.defaults{|s| s.some.key = word}
+      p Settings.all
+      p Settings.some.methods
+      expect( Settings.some.key ).to eq(word)
+    end
+  end
+
+  describe '::from_hash' do
+    it 'accessable by hash key' do
+      Settings.from_hash(hello: :world)
+      expect( Settings.hello ).to eq(:world)
     end
   end
 
