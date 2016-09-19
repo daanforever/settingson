@@ -10,15 +10,12 @@ describe Settings do
     it 'returns default value for simple value' do
       word = Faker::Lorem.word
       Settings.defaults{|s| s.cached_key = word}
-      p Settings.all
       expect( Settings.cached_key ).to eq(word)
     end
 
     it 'returns default value for complex value' do
       word = Faker::Lorem.word
       Settings.defaults{|s| s.some.key = word}
-      p Settings.all
-      p Settings.some.methods
       expect( Settings.some.key ).to eq(word)
     end
   end
@@ -49,13 +46,18 @@ describe Settings do
     end
     it 'returns same value for complex key #1' do
       word = Faker::Lorem.word
-      Settings.hello.hello = word
-      expect( Settings.hello.hello ).to eq(word)
+      Settings.hello1.hello2 = word
+      expect( Settings.hello1.hello2 ).to eq(word)
     end
     it 'returns same value for complex key #2' do
       word = Faker::Lorem.word
-      Settings.i.hello = word
-      expect( Settings.i.hello ).to eq(word)
+      Settings.hello.key = word
+      expect( Settings.hello.key ).to eq(word)
+    end
+    it 'returns same value for complex key #3' do
+      word = Faker::Lorem.word
+      Settings.hello.hello = word
+      expect( Settings.hello.hello ).to eq(word)
     end
     it 'not destroys record with nil value #1' do
       word = Faker::Lorem.word

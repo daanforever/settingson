@@ -24,21 +24,10 @@ module Settingson::Base
     #   settings.server.port = 80
     # end
     def defaults
+      return unless block_given?
       Rails.application.config.after_initialize do
-        begin
-          yield new(search_path: '__defaults') if block_given?
-        # rescue
-        #   Rails.logger.warn('Settingson::defaults failed')
-        end
+        yield Settingson::Store.new( klass: self, path: '__defaults' )
       end
-      true
-    end
-
-    # Settings.delete_all
-    # Delete cached items before super
-    def delete_all
-      Rails.cache.delete_matched(/#{self.configure.cache.namespace}/)
-      super
     end
 
     # Settings.from_hash('smtp.host' => 'host')
@@ -58,21 +47,25 @@ module Settingson::Base
     #
     def delete_all
       super
-      cache_key = "#{self.class.configure.cache.namespace}/#{self.key}"
-      Rails.cache.delete(cache_key)
-      __debug("#{self.class.name}: delete '#{self.key}' '#{cache_key}'")
+      Rails.cache.delete_matched(/#{self.configure.cache.namespace}/)
     end
 
     def method_missing(symbol, *args)
       super
     rescue NameError, NoMethodError
-      Settingson::Store.new.send(symbol, *args)
+      Settingson::Store.new(klass: self).send(symbol, args.first)
     end
 
   end # module ClassMethods
 
   included do
     serialize      :value
+    before_destroy :__delete_cached
+  end
+
+  def __delete_cached
+    cache_key = "#{self.class.configure.cache.namespace}/#{self.key}"
+    Rails.cache.delete(cache_key)
   end
 
 end # Settingson::Base
