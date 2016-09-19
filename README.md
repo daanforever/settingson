@@ -74,7 +74,7 @@ Settings.not_found.blank?                 # => true
 Settings.not_found.present?               # => false
 
 # but
-Settings.not_found.class    # => Settings(id: integer, key: string, value: text, created_at: datetime, updated_at: datetime)
+Settings.not_found.class    # => Settingson::Store
 
 Settings.all                # =>
 # [#<Settings id: 1, key: "server.host", value: "127.0.0.1", created_at: "2015-12-08 15:17:56", updated_at: "2015-12-08 15:17:56">,
