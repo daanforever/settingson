@@ -25,6 +25,10 @@ describe Settings do
       Settings.from_hash(hello: :world)
       expect( Settings.hello ).to eq(:world)
     end
+
+    it 'raises error when not Hash' do
+      expect{Settings.from_hash([:hello, :world])}.to raise_error(ArgumentError)
+    end
   end
 
   describe 'general' do
@@ -34,10 +38,12 @@ describe Settings do
     it 'not raises error on create new element' do
       expect{ Settings.hello = Faker::Lorem.word }.to_not raise_error
     end
-    it 'returns same Fixnum' do
-      word = Faker::Lorem.word
+    it 'returns same Fixnum #1' do
       Settings.number = 100
       expect( Settings.number ).to eq(100)
+    end
+    it 'returns 0 when key not found' do
+      expect( Settings.not_found.to_i ).to eq(0)
     end
     it 'returns same String' do
       word = Faker::Lorem.word
