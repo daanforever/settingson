@@ -112,23 +112,15 @@ end
 New way:
 in config/initializers/settingson.rb
 ```ruby
-Settings.defaults do
-  Settings.server.smtp.host? || Settings.server.smtp.host = 'host'
-  Settings.server.smtp.port? || Settings.server.smtp.port = 25
+Settings.defaults do |conf|
+  conf.server.smtp.host = 'host'
+  conf.server.smtp.port = 25
 end
 ```
 
-Old way:
-in config/initializers/settingson.rb
 ```ruby
-Rails.application.config.after_initialize do
-  begin
-    Settings.server.smtp.host? || Settings.server.smtp.host = 'host'
-    Settings.server.smtp.port? || Settings.server.smtp.port = '25'
-  rescue
-    Rails.logger.warn('Something goes wrong')
-  end
-end
+conf.server.smtp.host # => 'host'
+conf.server.smtp.port # => 25
 ```
 
 ## Contributing
