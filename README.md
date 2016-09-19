@@ -116,11 +116,9 @@ Settings.defaults do |conf|
   conf.server.smtp.host = 'host'
   conf.server.smtp.port = 25
 end
-```
 
-```ruby
-conf.server.smtp.host # => 'host'
-conf.server.smtp.port # => 25
+Settings.server.smtp.host # => 'host'
+Settings.server.smtp.port # => 25
 ```
 
 ## Contributing
