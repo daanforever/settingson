@@ -109,7 +109,6 @@ end
 ```
 
 ## The initial values
-New way:
 in config/initializers/settingson.rb
 ```ruby
 Settings.defaults do |conf|
