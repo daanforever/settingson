@@ -21,17 +21,22 @@ class Settingson::Store
     []
   end
 
+  def to_key
+    nil
+  end
+
   alias empty? nil?
   alias to_ary to_a
 
   def method_missing(symbol, *args)
+    __debug(caller)
     __rescue_action(symbol.to_s, args)
   end # method_missing
 
   protected
   # TODO: move all methods to support class
   def __debug(message)
-    message = sprintf("%s#%-32s: %s",
+    message = sprintf("%s#%-24s: %s",
                       self.class.name,
                       caller_locations.first.label,
                       message)

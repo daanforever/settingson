@@ -46,6 +46,7 @@ describe Settings do
       expect( Settings.not_found.to_s ).to eq("")
       expect( Settings.not_found.to_i ).to eq(0)
       expect( Settings.not_found.to_a ).to eq([])
+      expect( Settings.not_found.to_key ).to eq(nil)
       expect( Settings.not_found.nil? ).to eq(true)
       expect( Settings.not_found.empty? ).to eq(true)
       expect( Settings.not_found.blank? ).to eq(true)
