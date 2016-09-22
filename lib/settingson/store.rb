@@ -29,7 +29,9 @@ class Settingson::Store
   alias to_ary to_a
 
   def method_missing(symbol, *args)
+    __debug("caller: #{caller(1).first}")
     __debug("caller: #{caller(2).first}")
+    __debug("caller: #{caller(3).first}")
     __rescue_action(symbol.to_s, args)
   end # method_missing
 
