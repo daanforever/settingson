@@ -42,8 +42,13 @@ describe Settings do
       Settings.number = 100
       expect( Settings.number ).to eq(100)
     end
-    it 'returns 0 when key not found' do
+    it 'pass simple checks' do
+      expect( Settings.not_found.to_s ).to eq("")
       expect( Settings.not_found.to_i ).to eq(0)
+      expect( Settings.not_found.nil? ).to eq(true)
+      expect( Settings.not_found.empty? ).to eq(true)
+      expect( Settings.not_found.blank? ).to eq(true)
+      expect( Settings.not_found.present? ).to eq(false)
     end
     it 'returns same String' do
       word = Faker::Lorem.word
@@ -122,6 +127,23 @@ describe Settings do
       Settings.some.hello = Faker::Lorem.word
       Settings.delete_all
       expect( Settings.some.hello ).to be_empty
+    end
+  end
+
+  describe '::[]' do
+    it 'raises error with unknown class' do
+      expect{ Settings[Time.new] }.to raise_error(ArgumentError)
+    end
+    it 'returns Settingson::Store instance' do
+      expect( Settings['hello'] ).to be_a(Settingson::Store)
+    end
+    it 'returns instance with search path "hello"' do
+      settings = Settings['hello']
+      expect( settings.instance_variable_get(:@__path) ).to eq('hello')
+    end
+    it 'returns instance with search path "settings_1"' do
+      s = Settings.create(key: 'hello', value: 'world')
+      expect( Settings[s].instance_variable_get(:@__path) ).to eq("settings_1")
     end
   end
 

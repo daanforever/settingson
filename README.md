@@ -66,8 +66,7 @@ Settings.from_hash({hello: :world})
 Settings.hello                            # => :world
 Settings.hello?                           # => true
 
-Settings.not_found                        # => ""
-Settings.not_found?                       # => false
+Settings.not_found.to_s                   # => ""
 Settings.not_found.nil?                   # => true
 Settings.not_found.empty?                 # => true
 Settings.not_found.blank?                 # => true

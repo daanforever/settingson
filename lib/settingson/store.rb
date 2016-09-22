@@ -6,25 +6,30 @@ class Settingson::Store
   end
 
   def to_s
-    self.new_record? ? '' : super
+    ''
   end
 
   def to_i
-    self.new_record? ? 0 : super
+    0
   end
 
   def nil?
-    self.new_record? ? true : super
+    true
+  end
+
+  def to_a
+    []
   end
 
   alias empty? nil?
+  alias to_ary to_a
 
   def method_missing(symbol, *args)
     __rescue_action(symbol.to_s, args.first)
   end # method_missing
 
   protected
-
+  # TODO: move all methods to support class
   def __debug(message)
     message = sprintf("%s#%-32s: %s",
                       self.class.name,
@@ -38,8 +43,11 @@ class Settingson::Store
     when /(.+)=/  # setter
       __debug("set '#{$1}' value '#{value}' path '#{@__path}'")
       __set($1, value)
-    else # returns values or self
-      __debug("get '#{key}' value '#{value}' path '#{@__path}'")
+    when '[]'     # object reference
+      __debug("reference '#{value}' class '#{value.class}' path '#{@__path}'")
+      __reference(value)
+    else          # returns values or self
+      __debug("get '#{key}' path '#{@__path}'")
       __get(key)
     end
   end
@@ -66,6 +74,40 @@ class Settingson::Store
       __debug("return result")
       result
     end
+  end
+
+  # @profile = Profile.first # any ActiveRecord::Base object
+  # Settings[@profile].some.host = 'value'
+  def __reference(key)
+    case key
+    when String
+      __update_search_path(key)
+    when Symbol
+      __update_search_path(key.to_s)
+    when ActiveRecord::Base
+      class_name = __underscore(key.class)
+      ref_id = __reference_id(key)
+      __update_search_path("#{class_name}_#{ref_id || 'new'}")
+    else
+      raise ArgumentError.new(
+        'String/Symbol/ActiveRecord::Base variable required'
+      )
+    end
+    self
+  end
+
+  def __underscore(camel_cased_word)
+    word = camel_cased_word.to_s.dup
+    word.gsub!(/::/, '_')
+    word.gsub!(/([A-Z]+)([A-Z][a-z])/, '\1_\2')
+    word.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
+    word.tr!('-', '_')
+    word.downcase!
+    word
+  end
+
+  def __reference_id(key)
+    key.try(:to_key).try(:join, '_') || key.id
   end
 
   def __update_search_path(key)

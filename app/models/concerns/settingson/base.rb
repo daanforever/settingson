@@ -53,7 +53,7 @@ module Settingson::Base
     def method_missing(symbol, *args)
       super
     rescue NameError, NoMethodError
-      Settingson::Store.new(klass: self).send(symbol, args.first)
+      Settingson::Store.new(klass: self).send(symbol, *args)
     end
 
   end # module ClassMethods
