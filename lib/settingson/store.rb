@@ -25,7 +25,7 @@ class Settingson::Store
   alias to_ary to_a
 
   def method_missing(symbol, *args)
-    __rescue_action(symbol.to_s, args.first)
+    __rescue_action(symbol.to_s, args)
   end # method_missing
 
   protected
@@ -39,15 +39,20 @@ class Settingson::Store
   end
 
   def __rescue_action(key, value)
+    __debug("key: #{key}:#{key.class} value: #{value}:#{value.class} " +
+            "path: '#{@__path}'")
     case key
-    when /(.+)=/  # setter
-      __debug("set '#{$1}' value '#{value}' path '#{@__path}'")
-      __set($1, value)
     when '[]'     # object reference
-      __debug("reference '#{value}' class '#{value.class}' path '#{@__path}'")
-      __reference(value)
+      __debug("reference '#{value.first}'")
+      __get( __reference(value.first) )
+    when '[]='    # object reference setter
+      __debug("reference setter '#{value.first}' '#{value.last}'")
+      __set( __reference(value.first), value.last )
+    when /(.+)=/  # setter
+      __debug("set '#{$1}' value '#{value.first}'")
+      __set($1, value.first)
     else          # returns values or self
-      __debug("get '#{key}' path '#{@__path}'")
+      __debug("get '#{key}'")
       __get(key)
     end
   end
@@ -81,19 +86,18 @@ class Settingson::Store
   def __reference(key)
     case key
     when String
-      __update_search_path(key)
+      key
     when Symbol
-      __update_search_path(key.to_s)
+      key.to_s
     when ActiveRecord::Base
       class_name = __underscore(key.class)
       ref_id = __reference_id(key)
-      __update_search_path("#{class_name}_#{ref_id || 'new'}")
+      "#{class_name}_#{ref_id || 'new'}"
     else
       raise ArgumentError.new(
         'String/Symbol/ActiveRecord::Base variable required'
       )
     end
-    self
   end
 
   def __underscore(camel_cased_word)

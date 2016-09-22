@@ -66,7 +66,14 @@ Settings.from_hash({hello: :world})
 Settings.hello                            # => :world
 Settings.hello?                           # => true
 
+Settings[:greeting].welcome.message = 'Hello'
+Settings[:greeting].welcome.message       # => 'Hello'
+Settings.greeting[:welcome].message       # => 'Hello'
+Settings.greeting.welcome[:message]       # => 'Hello'
+Settings.greeting.welcome['message']      # => 'Hello'
+
 Settings.not_found.to_s                   # => ""
+Settings.not_found.to_i                   # => 0
 Settings.not_found.nil?                   # => true
 Settings.not_found.empty?                 # => true
 Settings.not_found.blank?                 # => true

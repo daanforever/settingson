@@ -137,9 +137,29 @@ describe Settings do
     it 'returns Settingson::Store instance' do
       expect( Settings['hello'] ).to be_a(Settingson::Store)
     end
-    it 'returns instance with search path "hello"' do
+    it 'returns instance with search path "hello" for simple' do
       settings = Settings['hello']
       expect( settings.instance_variable_get(:@__path) ).to eq('hello')
+    end
+    it 'returns instance with search path "hello.message" for complex #1' do
+      settings = Settings[:hello].message
+      expect( settings.instance_variable_get(:@__path) ).to eq('hello.message')
+    end
+
+    it 'Settings[:say] form' do
+      Settings[:say] = 'hello'
+      expect( Settings.say ).to eq('hello')
+    end
+    it 'Settings[:say].hello == Settings.say[:hello]' do
+      Settings[:say].hello = 'hello'
+      expect( Settings.say[:hello] ).to eq('hello')
+    end
+    it 'works with complex check' do
+      Settings[:greeting].welcome.message = 'Hello'
+      expect( Settings[:greeting].welcome.message  ).to eq('Hello')
+      expect( Settings.greeting[:welcome].message  ).to eq('Hello')
+      expect( Settings.greeting.welcome[:message]  ).to eq('Hello')
+      expect( Settings.greeting.welcome['message'] ).to eq('Hello')
     end
     it 'returns instance with search path "settings_1"' do
       s = Settings.create(key: 'hello', value: 'world')
