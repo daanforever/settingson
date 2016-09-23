@@ -1,5 +1,8 @@
 class Settingson::Store
 
+  # extend ActiveModel::Naming
+  # include ActiveModel::Conversion
+  #
   def initialize(klass:, path: nil)
     @__klass  = klass
     @__path   = path
@@ -29,18 +32,18 @@ class Settingson::Store
   alias to_ary to_a
 
   def method_missing(symbol, *args)
-    __debug("caller: #{caller(1).first}")
-    __debug("caller: #{caller(2).first}")
-    __debug("caller: #{caller(3).first}")
+    __debug
+    __debug("from\n\t#{caller[1..@__klass.configure.trace].join("\n\t")}") if
+      @__klass.configure.trace > 0
 
-    # __references_action(symbol, *args) or __rescue_action(symbol.to_s, *args)
-    __rescue_action(symbol.to_s, *args)
+    __references_action(symbol, *args) or __rescue_action(symbol.to_s, *args)
+    # __rescue_action(symbol.to_s, *args)
   end # method_missing
 
   protected
   # TODO: move all methods to support class
-  def __debug(message)
-    message = sprintf("%s#%-24s: %s",
+  def __debug(message="")
+    message = sprintf("%s#%20s: %s",
                       self.class.name,
                       caller_locations.first.label,
                       message)
@@ -48,9 +51,12 @@ class Settingson::Store
   end
 
   def __references_action(symbol, *args)
-    if @__reference and @__reference.respond_to?(symbol)
-      __debug("#{@__reference.to_s} know what to do with #{symbol}")
-      @__reference.send(symbol, *args)
+    # Proxy pass only one method
+    # return nil
+    # return nil unless ['model_name', 'to_model'].include?(symbol.to_s)
+    if @__klass and @__klass.respond_to?(symbol)
+      __debug("#{@__klass.to_s} know what to do with #{symbol}")
+      @__klass.send(symbol, *args)
     end
   end
 
