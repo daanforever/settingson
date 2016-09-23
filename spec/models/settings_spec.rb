@@ -152,6 +152,11 @@ describe Settings do
       Settings[:say] = 'hello'
       expect( Settings.say ).to eq('hello')
     end
+    it 'Settings[@setting, :key] form' do
+      setting = Settings.create!(key: 'test_key', value: 'test_value')
+      Settings[setting, :value] = 'hello'
+      expect( Settings.test_value ).to eq('hello')
+    end
     it 'Settings[:say].hello == Settings.say[:hello]' do
       Settings[:say].hello = 'hello'
       expect( Settings.say[:hello] ).to eq('hello')

@@ -32,7 +32,9 @@ class Settingson::Store
     __debug("caller: #{caller(1).first}")
     __debug("caller: #{caller(2).first}")
     __debug("caller: #{caller(3).first}")
-    __rescue_action(symbol.to_s, args)
+
+    # __references_action(symbol, *args) or __rescue_action(symbol.to_s, *args)
+    __rescue_action(symbol.to_s, *args)
   end # method_missing
 
   protected
@@ -45,20 +47,31 @@ class Settingson::Store
     Rails.logger.debug(message) if @__klass.configure.debug
   end
 
-  def __rescue_action(key, value)
-    __debug("key: #{key}:#{key.class} value: #{value}:#{value.class} " +
+  def __references_action(symbol, *args)
+    if @__reference and @__reference.respond_to?(symbol)
+      __debug("#{@__reference.to_s} know what to do with #{symbol}")
+      @__reference.send(symbol, *args)
+    end
+  end
+
+  def __rescue_action(key, *args)
+    __debug("key: #{key}:#{key.class} args: #{args}:#{args.class} " +
             "path: '#{@__path}'")
     case key
-    when '[]'     # object reference
-      __debug("reference '#{value.first}'")
-      __get( __reference(value.first) )
+    when '[]'     # object reference[, with :field]
+      __debug("reference '#{args}'")
+      __get( __with_reference(args[0], args[1]) )
     when '[]='    # object reference setter
-      __debug("reference setter '#{value.first}' '#{value.last}'")
-      __set( __reference(value.first), value.last )
+      __debug("reference setter '#{args}'")
+      if args.size == 3 # [@setting, :key]= form
+        __set( __with_reference(args[0], args[1]), args[2] )
+      else # [@settings]= form
+        __set( __with_reference(args.first), args.last )
+      end
     when /(.+)=/  # setter
-      __debug("set '#{$1}' value '#{value.first}'")
-      __set($1, value.first)
-    else          # returns values or self
+      __debug("set '#{$1}' args '#{args.first}'")
+      __set($1, args.first)
+    else          # returns result or self
       __debug("get '#{key}'")
       __get(key)
     end
@@ -90,16 +103,21 @@ class Settingson::Store
 
   # @profile = Profile.first # any ActiveRecord::Base object
   # Settings[@profile].some.host = 'value'
-  def __reference(key)
+  def __with_reference(key, field=nil)
     case key
     when String
       key
     when Symbol
       key.to_s
     when ActiveRecord::Base
-      class_name = __underscore(key.class)
-      ref_id = __reference_id(key)
-      "#{class_name}_#{ref_id || 'new'}"
+      @__reference = key
+      if field.nil?
+        class_name = __underscore(key.class)
+        ref_id = __reference_id(key)
+        "#{class_name}_#{ref_id || 'new'}"
+      else
+        key.send(field.to_sym)
+      end
     else
       raise ArgumentError.new(
         'String/Symbol/ActiveRecord::Base variable required'
