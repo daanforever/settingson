@@ -30,6 +30,7 @@ class Settingson::Store
 
   alias empty? nil?
   alias to_ary to_a
+  alias to_str to_s
 
   def method_missing(symbol, *args)
     __debug
