@@ -1,7 +1,7 @@
 PATH
   remote: ../
   specs:
-    settingson (1.6.0)
+    settingson (1.7.6)
       rails (>= 4.0)
 
 GEM
