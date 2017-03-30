@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = Settingson::VERSION
   spec.authors       = ["dan"]
   spec.email         = ["daan.forever@gmail.com"]
-  spec.summary       = %q{Settings management for Ruby on Rails 4 applications (ActiveRecord) }
-  spec.description   = %q{Settings management for Ruby on Rails 4 applications (ActiveRecord) }
+  spec.summary       = %q{Settings management for Ruby on Rails applications (with ActiveRecord) }
+  spec.description   = %q{Settings management for Ruby on Rails applications (with ActiveRecord) }
   spec.homepage      = "https://github.com/daanforever/settingson"
   spec.license       = "MIT"
 
