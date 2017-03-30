@@ -26,3 +26,4 @@ spec/dummy/tmp/*
 !spec/dummy/tmp/cache
 spec/dummy/tmp/cache/*
 !spec/dummy/tmp/cache/.keep
+Gemfile.lock
