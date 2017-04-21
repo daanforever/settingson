@@ -44,11 +44,12 @@ class Settingson::Store
   protected
   # TODO: move all methods to support class
   def __debug(message="")
+    return unless @__klass.configure.debug
     message = sprintf("%s#%20s: %s",
                       self.class.name,
                       caller_locations.first.label,
                       message)
-    Rails.logger.debug(message) if @__klass.configure.debug
+    Rails.logger.debug(message)
   end
 
   def __references_action(symbol, *args)

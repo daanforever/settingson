@@ -1,7 +1,7 @@
 ENV["RAILS_ENV"] ||= 'test'
 
-require "codeclimate-test-reporter"
-CodeClimate::TestReporter.start
+require 'simplecov'
+SimpleCov.start
 
 require ::File.expand_path('../dummy/config/environment',  __FILE__)
 require 'rspec/rails'
