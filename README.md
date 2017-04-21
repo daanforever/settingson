@@ -44,8 +44,10 @@ as the generator will have created a migration file (if your ORM supports them).
 
 shell commands:
 ```console
-rails g settingson Settings
-rake db:migrate
+bin/rails g settingson Settings
+# or 
+# rake db:migrate
+# for rails 4
 ```
 
 code:
