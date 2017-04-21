@@ -38,7 +38,7 @@ Next, you'll usually run
 ```console
 bin/rails db:migrate
 # or 
-# rake db:migrate
+rake db:migrate
 # for rails 4 or less
 ```
 as the generator will have created a migration file (if your ORM supports them).
