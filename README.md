@@ -5,7 +5,7 @@
 
 # Settingson
 
-Simple settings management for applications (Ruby on Rails 4 with ActiveRecord)
+Simple settings management for applications (Ruby on Rails with ActiveRecord)
 
 ## Installation
 
