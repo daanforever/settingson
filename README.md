@@ -36,7 +36,10 @@ Replace MODEL by the class name used for the applications settings, it's frequen
 
 Next, you'll usually run
 ```console
+bin/rails db:migrate
+# or 
 rake db:migrate
+# for rails 4 or less
 ```
 as the generator will have created a migration file (if your ORM supports them).
 
@@ -44,8 +47,7 @@ as the generator will have created a migration file (if your ORM supports them).
 
 shell commands:
 ```console
-rails g settingson Settings
-rake db:migrate
+bin/rails g settingson Settings
 ```
 
 code:
