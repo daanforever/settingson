@@ -18,6 +18,18 @@ describe Settings do
       Settings.defaults{|s| s.some.key = word}
       expect( Settings.some.key ).to eq(word)
     end
+
+    it 'save and returns correct value for multiple default values' do
+      word1 = Faker::Lorem.word
+      word2 = Faker::Lorem.word
+      Settings.defaults do |s|
+        s.some.key1 = word1
+        s.some.key2 = word2
+      end
+      expect( Settings.some.key1 ).to eq(word1)
+      expect( Settings.some.key2 ).to eq(word2)
+    end
+
   end
 
   describe '::from_hash' do

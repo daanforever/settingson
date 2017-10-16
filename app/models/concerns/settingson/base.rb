@@ -26,7 +26,7 @@ module Settingson::Base
     def defaults
       return unless block_given?
       Rails.application.config.after_initialize do
-        yield Settingson::Store.new( klass: self, path: '__defaults' )
+        yield Settingson::Defaults.new( klass: self )
       end
     end
 

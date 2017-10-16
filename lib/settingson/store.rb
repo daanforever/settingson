@@ -3,9 +3,10 @@ class Settingson::Store
   # extend ActiveModel::Naming
   # include ActiveModel::Conversion
   #
-  def initialize(klass:, path: nil)
-    @__klass  = klass
-    @__path   = path
+  def initialize(klass:, path: nil, defaults: false)
+    @__klass    = klass
+    @__path     = path
+    @__defaults = defaults
   end
 
   def to_s
@@ -154,7 +155,7 @@ class Settingson::Store
   def __cached_or_default_value(key)
     result = __cached_value(key)
 
-    if result.is_a?(ActiveRecord::RecordNotFound) # Try defaults
+    if ! @__defaults and result.is_a?(ActiveRecord::RecordNotFound)
       __cached_value('__defaults.' + key)
     else
       result
