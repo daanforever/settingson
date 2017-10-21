@@ -1,7 +1,7 @@
 PATH
-  remote: ../
+  remote: ..
   specs:
-    settingson (1.7.6)
+    settingson (1.7.8)
       rails (>= 4.0)
 
 GEM
@@ -162,4 +162,4 @@ DEPENDENCIES
   sqlite3
 
 BUNDLED WITH
-   1.12.5
+   1.15.4
