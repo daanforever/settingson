@@ -1,37 +1,19 @@
-class Settingson::Store
+class Settingson::Default::Store
 
-  # extend ActiveModel::Naming
-  # include ActiveModel::Conversion
-  #
-  def initialize(klass:, path: nil, defaults: false)
+  @@__defaults = {}
+
+  def initialize(klass:, path: nil)
     @__klass    = klass
     @__path     = path
-    @__defaults = defaults
   end
 
-  def to_s
-    ''
+  def to_h
+    @@_defaults
   end
 
-  def to_i
-    0
+  def to_ary
+    @@__defaults.to_a
   end
-
-  def nil?
-    true
-  end
-
-  def to_a
-    []
-  end
-
-  def to_key
-    nil
-  end
-
-  alias empty? nil?
-  alias to_ary to_a
-  alias to_str to_s
 
   def method_missing(symbol, *args)
     __debug
@@ -41,17 +23,6 @@ class Settingson::Store
     __references_action(symbol, *args) or __rescue_action(symbol.to_s, *args)
     # __rescue_action(symbol.to_s, *args)
   end # method_missing
-
-  protected
-  # TODO: move all methods to support class
-  def __debug(message="")
-    return unless @__klass.configure.debug
-    message = sprintf("%s#%20s: %s",
-                      self.class.name,
-                      caller_locations.first.label,
-                      message)
-    Rails.logger.debug(message)
-  end
 
   def __references_action(symbol, *args)
     # Proxy pass only one method
@@ -86,29 +57,26 @@ class Settingson::Store
     end
   end
 
+  protected
+  # TODO: move all methods to support class
+  def __debug(message="")
+    return unless @__klass.configure.debug
+    message = sprintf("%s#%20s: %s",
+                      self.class.name,
+                      caller_locations.first.label,
+                      message)
+    Rails.logger.debug(message)
+  end
+
   def __set(key, value)
-    __update_search_path(key)
-    if record = @__klass.find_by(key: @__path)
-      record.update!(value: value)
-    else
-      @__klass.create!(key: @__path, value: value)
-    end
-    Rails.cache.write(__cache_key(@__path), value)
+    @@__defaults[_search_path(key)] = value
+    @__path = ''
     value
   end
 
   def __get(key)
     __update_search_path(key)
-    result = __cached_or_default_value(@__path)
-
-    if result.is_a?(ActiveRecord::RecordNotFound) or
-       result.is_a?(Settingson::Default::Store)
-      __debug("return self with path: #{@__path}")
-      self
-    else
-      __debug("return result")
-      result
-    end
+    @@__defaults[@__path] || self
   end
 
   # @profile = Profile.first # any ActiveRecord::Base object
@@ -149,42 +117,11 @@ class Settingson::Store
     key.try(:to_key).try(:join, '_') || key.id
   end
 
+  def _search_path(key)
+    [@__path, key].compact.join('.')
+  end
+
   def __update_search_path(key)
-    @__path = [@__path, key].compact.join('.')
+    @__path = _search_path(key)
   end
-
-  def __cached_or_default_value(key)
-    result = __cached_value(key)
-
-    if result.is_a?(ActiveRecord::RecordNotFound)
-      __debug("looking in #{@__klass.name}.defaults[#{key}]")
-      @__klass.defaults[key]
-    else
-      result
-    end
-  end
-
-  def __cache_key(key)
-    [ @__klass.configure.cache.namespace, key ].join('/')
-  end
-
-  def __cached_value(key)
-    __debug("looking in cache '#{__cache_key(key)}'")
-    Rails.cache.fetch(
-      __cache_key(key),
-      expires_in:         @__klass.configure.cache.expires,
-      race_condition_ttl: @__klass.configure.cache.race_condition_ttl
-    ) do
-      __debug("ask DB '#{key}'")
-      __get_from_db(key)
-    end
-  end
-
-  def __get_from_db(key)
-    @__klass.find_by!(key: key).value
-  rescue ActiveRecord::RecordNotFound
-    __debug("not found")
-    ActiveRecord::RecordNotFound.new
-  end
-
 end

@@ -19,15 +19,20 @@ module Settingson::Base
       @_settings
     end
 
-    # Settings.defaults do |settings|
-    #   settings.server.host = 'host'
-    #   settings.server.port = 80
+    # Settings.defaults do |default|
+    #   default.server.host = 'host'
+    #   default.server.port = 80
     # end
     def defaults
-      return unless block_given?
-      Rails.application.config.after_initialize do
-        yield Settingson::Defaults.new( klass: self )
+      @__defaults = Settingson::Default.new( klass: self )
+
+      if block_given?
+        Rails.application.config.after_initialize do
+          yield @__defaults
+        end
       end
+
+      @__defaults
     end
 
     # Settings.from_hash('smtp.host' => 'host')
