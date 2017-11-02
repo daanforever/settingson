@@ -1,12 +1,11 @@
 class Settingson::Store
 
-  # extend ActiveModel::Naming
-  # include ActiveModel::Conversion
-  #
-  def initialize(klass:, path: nil, defaults: false)
+  require 'settingson/store/default'
+  require 'settingson/store/general'
+
+  def initialize(klass:, path: nil)
     @__klass    = klass
     @__path     = path
-    @__defaults = defaults
   end
 
   def to_s
@@ -58,7 +57,7 @@ class Settingson::Store
     # return nil
     # return nil unless ['model_name', 'to_model'].include?(symbol.to_s)
     if @__klass and @__klass.respond_to?(symbol)
-      __debug("#{@__klass.to_s} know what to do with #{symbol}")
+      __debug("#{@__klass} know what to do with #{symbol}")
       @__klass.send(symbol, *args)
     end
   end
@@ -102,7 +101,7 @@ class Settingson::Store
     result = __cached_or_default_value(@__path)
 
     if result.is_a?(ActiveRecord::RecordNotFound) or
-       result.is_a?(Settingson::Default::Store)
+       result.is_a?(Settingson::Store::Default)
       __debug("return self with path: #{@__path}")
       self
     else
@@ -149,8 +148,12 @@ class Settingson::Store
     key.try(:to_key).try(:join, '_') || key.id
   end
 
+  def _search_path(key)
+    [@__path, key].compact.join('.')
+  end
+
   def __update_search_path(key)
-    @__path = [@__path, key].compact.join('.')
+    @__path = _search_path(key)
   end
 
   def __cached_or_default_value(key)

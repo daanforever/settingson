@@ -24,7 +24,7 @@ module Settingson::Base
     #   default.server.port = 80
     # end
     def defaults
-      @__defaults = Settingson::Default.new( klass: self )
+      @__defaults = Settingson::Store::Default.new( klass: self )
 
       if block_given?
         Rails.application.config.after_initialize do
@@ -58,7 +58,7 @@ module Settingson::Base
     def method_missing(symbol, *args)
       super
     rescue NameError, NoMethodError
-      Settingson::Store.new(klass: self).send(symbol, *args)
+      Settingson::Store::General.new(klass: self).send(symbol, *args)
     end
 
   end # module ClassMethods

@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Settingson::Default do
+describe Settingson::Store::Default do
 
   it 'not raises errors with empty block' do
     expect{ Settings.defaults {} }.to_not raise_error
