@@ -48,6 +48,7 @@ as the generator will have created a migration file (if your ORM supports them).
 shell commands:
 ```console
 bin/rails g settingson Settings
+bin/rails db:migrate
 ```
 
 code:
