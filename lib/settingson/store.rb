@@ -6,6 +6,7 @@ class Settingson::Store
   def initialize(klass:, path: nil)
     @__klass    = klass
     @__path     = path
+    @__config   = klass.configure
   end
 
   def to_s
@@ -34,8 +35,8 @@ class Settingson::Store
 
   def method_missing(symbol, *args)
     __debug
-    __debug("from\n\t#{caller[1..@__klass.configure.trace].join("\n\t")}") if
-      @__klass.configure.trace > 0
+    __debug("from\n\t#{caller[1..@__config.trace].join("\n\t")}") if
+      @__config.trace > 0
 
     __references_action(symbol, *args) or __rescue_action(symbol.to_s, *args)
     # __rescue_action(symbol.to_s, *args)
@@ -44,7 +45,7 @@ class Settingson::Store
   protected
   # TODO: move all methods to support class
   def __debug(message="")
-    return unless @__klass.configure.debug
+    return unless @__config.debug
     message = sprintf("%s#%20s: %s",
                       self.class.name,
                       caller_locations.first.label,
@@ -92,13 +93,14 @@ class Settingson::Store
     else
       @__klass.create!(key: @__path, value: value)
     end
-    Rails.cache.write(__cache_key(@__path), value)
+
+    Rails.cache.write(__cache_key(@__path), value) if @__config.cache.enabled
     value
   end
 
   def __get(key)
     __update_search_path(key)
-    result = __cached_or_default_value(@__path)
+    result = __look_up_value(@__path)
 
     if result.is_a?(ActiveRecord::RecordNotFound) or
        result.is_a?(Settingson::Store::Default)
@@ -156,8 +158,8 @@ class Settingson::Store
     @__path = _search_path(key)
   end
 
-  def __cached_or_default_value(key)
-    result = __cached_value(key)
+  def __look_up_value(key)
+    result = @__config.cache.enabled ? __from_cache(key) : __from_db(key)
 
     if result.is_a?(ActiveRecord::RecordNotFound)
       __debug("looking in #{@__klass.name}.defaults[#{key}]")
@@ -168,22 +170,22 @@ class Settingson::Store
   end
 
   def __cache_key(key)
-    [ @__klass.configure.cache.namespace, key ].join('/')
+    [ @__config.cache.namespace, key ].join('/')
   end
 
-  def __cached_value(key)
+  def __from_cache(key)
     __debug("looking in cache '#{__cache_key(key)}'")
     Rails.cache.fetch(
       __cache_key(key),
-      expires_in:         @__klass.configure.cache.expires,
-      race_condition_ttl: @__klass.configure.cache.race_condition_ttl
+      expires_in:         @__config.cache.expires,
+      race_condition_ttl: @__config.cache.race_condition_ttl
     ) do
       __debug("ask DB '#{key}'")
-      __get_from_db(key)
+      __from_db(key)
     end
   end
 
-  def __get_from_db(key)
+  def __from_db(key)
     @__klass.find_by!(key: key).value
   rescue ActiveRecord::RecordNotFound
     __debug("not found")

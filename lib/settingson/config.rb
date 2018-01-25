@@ -11,5 +11,6 @@ class Settingson::Config
                             enabled: true,
                             namespace: "settingson/#{Rails.env}"
                             )
+    @cache.enabled = false if Rails.env.test?
   end
 end

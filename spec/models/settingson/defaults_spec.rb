@@ -21,4 +21,16 @@ describe Settingson::Store::Default do
     expect( h['cached.key2'] ).to eq(word)
   end
 
+  describe '#to_h' do
+    it 'returns Hash' do
+      expect( Settings.defaults.to_h ).to be_a(Hash)
+    end
+  end
+
+  describe '#to_ary' do
+    it 'returns Array' do
+      expect( Settings.defaults.to_ary ).to be_a(Array)
+    end
+  end
+
 end

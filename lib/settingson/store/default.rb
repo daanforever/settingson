@@ -3,7 +3,7 @@ class Settingson::Store::Default < Settingson::Store
   @@__defaults = {}
 
   def to_h
-    @@_defaults
+    @@__defaults
   end
 
   def to_ary
@@ -20,10 +20,6 @@ class Settingson::Store::Default < Settingson::Store
   def __get(key)
     __update_search_path(key)
     @@__defaults[@__path] || self
-  end
-
-  def __reference_id(key)
-    key.try(:to_key).try(:join, '_') || key.id
   end
 
 end
