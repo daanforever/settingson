@@ -129,6 +129,16 @@ Settings.server.smtp.host # => 'host'
 Settings.server.smtp.port # => 25
 ```
 
+## DEBUG
+in config/initializers/settingson.rb
+```ruby
+
+if Rails.env.development?
+  Settings.configure.debug = true
+  Settings.configure.trace = 3
+end
+```
+
 ## Contributing
 
 1. Fork it ( https://github.com/daanforever/settingson/fork )
