@@ -129,14 +129,17 @@ Settings.server.smtp.host # => 'host'
 Settings.server.smtp.port # => 25
 ```
 
-## DEBUG
+## Debug and testings
 in config/initializers/settingson.rb
 ```ruby
 
 if Rails.env.development?
-  Settings.configure.debug = true
-  Settings.configure.trace = 3
+  Settings.configure.debug         = true
+  Settings.configure.trace         = 3
+  Settings.configure.cache.enabled = false (default: true)
 end
+
+Caching is disabled by default only in test environment.
 ```
 
 ## Contributing
