@@ -136,7 +136,7 @@ in config/initializers/settingson.rb
 if Rails.env.development?
   Settings.configure.debug         = true
   Settings.configure.trace         = 3
-  Settings.configure.cache.enabled = false (default: true)
+  Settings.configure.cache.enabled = false # default: true
 end
 ```
 Caching is disabled by default only in test environment.
