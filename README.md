@@ -120,9 +120,9 @@ end
 ## The initial values
 in config/initializers/settingson.rb
 ```ruby
-Settings.defaults do |conf|
-  conf.server.smtp.host = 'host'
-  conf.server.smtp.port = 25
+Settings.defaults do |default|
+  default.server.smtp.host = 'host'
+  default.server.smtp.port = 25
 end
 
 Settings.server.smtp.host # => 'host'
@@ -138,9 +138,9 @@ if Rails.env.development?
   Settings.configure.trace         = 3
   Settings.configure.cache.enabled = false (default: true)
 end
-
-Caching is disabled by default only in test environment.
 ```
+Caching is disabled by default only in test environment.
+
 
 ## Contributing
 
