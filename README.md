@@ -141,6 +141,9 @@ end
 ```
 Caching is disabled by default only in test environment.
 
+## TODO:
+* Skip key search when assignment requested
+
 
 ## Contributing
 
