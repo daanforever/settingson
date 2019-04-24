@@ -157,7 +157,7 @@ DEPENDENCIES
   codeclimate-test-reporter
   database_cleaner
   faker
-  rails (~> 5.1.0)
+  rails (~> 5.1)
   rails-dummy
   rspec (~> 3.5)
   rspec-rails (~> 3.5)
