@@ -28,8 +28,9 @@ class SettingsonGenerator < Rails::Generators::NamedBase
 
   private
   def settingson_inject_lines(name)
-    if File.readlines("app/models/#{name.downcase}.rb").grep(/\A\s*include Settingson::Base\z/).blank?
-      inject_into_class "app/models/#{name.downcase}.rb", name.camelize, "\tinclude Settingson::Base\n"
+    file = Rails.root.join("app/models/#{name.downcase}.rb")
+    if File.readlines(file).grep(/\A\s*include Settingson::Base\z/).blank?
+      inject_into_class file, name.camelize, "\tinclude Settingson::Base\n"
     end
   end
 end
