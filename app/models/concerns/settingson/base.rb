@@ -64,7 +64,7 @@ module Settingson::Base
   end # module ClassMethods
 
   included do
-    serialize      :value
+    serialize      :value, coder: JSON
     before_destroy :__delete_cached
   end
 
