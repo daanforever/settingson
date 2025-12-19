@@ -1,3 +1,4 @@
+require 'ostruct'
 require "settingson/version"
 require 'settingson/config'
 
