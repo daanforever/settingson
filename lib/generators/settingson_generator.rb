@@ -8,18 +8,12 @@ class SettingsonGenerator < Rails::Generators::NamedBase
   def settingson_migration
     klass = name.camelize
     say "Searching for #{klass} class"
-    if Object.const_defined?(klass)
 
-      settingson_inject_lines(name)
-
-      if klass.constantize.column_names.include?('name')
-        migration_template 'migrations/rename_name_to_key_on_settings.rb', 'db/migrate/rename_name_to_key_on_settings.rb'
-      end
-
-    else
+    unless Object.const_defined?(klass)
       generate(:model, "#{klass} key:string:uniq value:text --force-plural")
-      settingson_inject_lines(name)
     end
+
+    settingson_inject_lines(name)
   end
 
   def self.next_migration_number dirname
